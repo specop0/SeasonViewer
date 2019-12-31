@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -38,9 +39,8 @@ namespace SeasonBackend.Miner
             {
                 Url = seasonUrl.ToString()
             };
-            var json = JsonSerializer.Serialize(pageSourceRequest);
 
-            var response = this.Miner.PostAsync("pageSource", new StringContent(json, Encoding.UTF8, "application/json")).Result;
+            var response = this.Miner.PostAsync("pageSource", pageSourceRequest.ToHttpContent()).Result;
             if (response.IsSuccessStatusCode)
             {
                 var body = response.Content.ReadAsStringAsync().Result;
@@ -50,20 +50,9 @@ namespace SeasonBackend.Miner
             return result;
         }
 
-        public MineHosterResult MineHoster(Anime anime)
-        {
-            var result = new MineHosterResult();
-
-            return result;
-        }
-
         public static Anime[] ParseSeasonAnime(string body, string season)
         {
-            var options = new JsonSerializerOptions()
-            {
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            };
-            var pageSourceResult = JsonSerializer.Deserialize<MinePageSourceResult>(body, options);
+            var pageSourceResult = body.Deserialize<MinePageSourceResult>();
             var pageSource = pageSourceResult.PageSource;
 
             var animes = new List<Anime>();
@@ -122,6 +111,87 @@ namespace SeasonBackend.Miner
             }
 
             return animes.ToArray();
+        }
+
+        public MineHosterResult MineHoster(Anime anime)
+        {
+            var result = new MineHosterResult();
+
+            var hosters = new List<HosterInformation>();
+            hosters.AddRange(this.ParseAmazon(anime));
+
+            return result;
+        }
+
+        public HosterInformation[] ParseAmazon(Anime anime)
+        {
+            var request = new AmazonSearchRequest
+            {
+                Url = "https://www.amazon.de/gp/video/storefront?filterId=OFFER_FILTER%3DPRIME",
+                Search = anime.Mal.Name,
+            };
+
+            var response = this.Miner.PostAsync("amazon", request.ToHttpContent()).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var body = response.Content.ReadAsStringAsync().Result;
+                return ParseAmazonSearch(anime, body);
+            }
+
+            return new HosterInformation[0];
+        }
+
+        public static HosterInformation[] ParseAmazonSearch(Anime anime, string body)
+        {
+            var hosterInformations = new List<HosterInformation>();
+
+            var pageSourceResult = body.Deserialize<AmazonSearchResult>();
+            var pageSource = pageSourceResult.PageSource;
+
+            var document = new HtmlDocument();
+            document.LoadHtml(pageSource);
+
+            var searchResultDiv = document.DocumentNode.SelectSingleNode("//div[@class='s-result-list s-search-results sg-row']");
+            var searchResults = searchResultDiv.SelectNodes("div");
+
+            foreach (var searchResult in searchResults)
+            {
+                var amazonId = searchResult.GetAttributeValue("data-asin", "");
+                var amazonName = searchResult.SelectSingleNode(".//img")?.GetAttributeValue("alt", "");
+
+                if (string.IsNullOrEmpty(amazonId) || string.IsNullOrEmpty(amazonName))
+                {
+                    continue;
+                }
+
+                var hosterInformation = new HosterInformation
+                {
+                    HosterType = Protos.HosterType.Amazon,
+                    Id = amazonId,
+                    Name = amazonName,
+                };
+                hosterInformations.Add(hosterInformation);
+            }
+
+            if (hosterInformations.Count > 1)
+            {
+                var simplifySearchRegex = new Regex("^[A-z,0-9]");
+                var name = simplifySearchRegex.Replace(anime.Mal.Name, "").ToLowerInvariant();
+
+                var matchingHosterInformations = hosterInformations.Where(x =>
+                {
+                    var amazonName = simplifySearchRegex.Replace(x.Name, "").ToLowerInvariant();
+                    return name == amazonName;
+                }).ToList();
+
+                if (matchingHosterInformations.Count == 1)
+                {
+                    return matchingHosterInformations.ToArray();
+                }
+            }
+
+
+            return hosterInformations.ToArray();
         }
     }
 }

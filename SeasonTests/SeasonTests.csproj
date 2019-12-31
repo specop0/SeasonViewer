@@ -5,11 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Backend\Miner\amazon-search-expected.json" />
+    <None Remove="Backend\Miner\amazon-search.json" />
     <None Remove="Backend\Miner\mal-season-expected.json" />
     <None Remove="Backend\Miner\mal-season.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Backend\Miner\amazon-search-expected.json" />
+    <EmbeddedResource Include="Backend\Miner\amazon-search.json" />
     <EmbeddedResource Include="Backend\Miner\mal-season-expected.json" />
   </ItemGroup>
 

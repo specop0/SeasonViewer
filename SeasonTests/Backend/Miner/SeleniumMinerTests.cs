@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
 using SeasonBackend.Database;
 using SeasonBackend.Miner;
+using SeasonBackend.Protos;
+using System.Linq;
 using System.Text.Json;
 
 namespace SeasonTests.Backend.Miner
@@ -37,6 +39,40 @@ namespace SeasonTests.Backend.Miner
                 Assert.AreEqual(default(int), actual.Id);
 
                 Assert.IsNull(actual.Hoster);
+            }
+        }
+
+        [Test]
+        public void TestParseAmazonFromJson([Values(true, false)] bool exactMatch)
+        {
+            var input = TestResources.amazon_search;
+            var anime = new Anime { Mal = new MalInformation { Name = exactMatch ? "Psycho-Pass 3" : "Psycho-Pass" } };
+            var hosterInformations = SeleniumMiner.ParseAmazonSearch(anime, input);
+
+            if (exactMatch)
+            {
+                Assert.AreEqual(1, hosterInformations.Length);
+                var hosterInformation = hosterInformations.Single();
+                Assert.AreEqual("PSYCHO-PASS 3", hosterInformation.Name);
+                Assert.AreEqual("B07ZHQ34WW", hosterInformation.Id);
+                Assert.AreEqual(HosterType.Amazon, hosterInformation.HosterType);
+            }
+            else
+            {
+                var expectedHosterInformations = JsonSerializer.Deserialize<HosterInformation[]>(TestResources.amazon_search_expected);
+                CollectionAssert.IsNotEmpty(expectedHosterInformations, "unit test implementation");
+
+                Assert.AreEqual(expectedHosterInformations.Length, hosterInformations.Length);
+
+                for (var i = 0; i < expectedHosterInformations.Length; i++)
+                {
+                    var expected = expectedHosterInformations[i];
+                    var actual = hosterInformations[i];
+
+                    Assert.AreEqual(expected.Id, actual.Id);
+                    Assert.AreEqual(expected.Name, actual.Name);
+                    Assert.AreEqual(expected.HosterType, actual.HosterType);
+                }
             }
         }
 

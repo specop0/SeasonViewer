@@ -61,6 +61,24 @@ namespace SeasonTests.Backend.Miner {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {&quot;pageSource&quot;:&quot;&lt;html&gt;&lt;!-- sp:feature:head-start --&gt;&lt;head&gt;&lt;script async=\&quot;\&quot; src=\&quot;https://images-eu.ssl-images-amazon.com/images/I/31BVuidgT8L.js\&quot; crossorigin=\&quot;anonymous\&quot;&gt;&lt;\/script&gt;&lt;script&gt;var aPageStart = (new Date()).getTime();&lt;\/script&gt;&lt;meta charset=\&quot;utf-8\&quot;&gt;\n&lt;script type=\&quot;text/javascript\&quot;&gt;var ue_t0=ue_t0||+new Date();&lt;\/script&gt;&lt;!-- sp:feature:cs-optimization --&gt;\n&lt;meta http-equiv=\&quot;x-dns-prefetch-control\&quot; content=\&quot;on\&quot;&gt;&lt;link rel=\&quot;dns-prefetch\&quot; href=\&quot;https://images-eu.ssl-images-amazon.com\&quot;&gt; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string amazon_search {
+            get {
+                return ResourceManager.GetString("amazon_search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{&quot;Id&quot;:&quot;B07ZHQ34WW&quot;,&quot;Name&quot;:&quot;PSYCHO-PASS 3&quot;,&quot;HosterType&quot;:1},{&quot;Id&quot;:&quot;B0115DA7QM&quot;,&quot;Name&quot;:&quot;Homeland - Staffel 4 [dt./OV]&quot;,&quot;HosterType&quot;:1},{&quot;Id&quot;:&quot;B01671KGTK&quot;,&quot;Name&quot;:&quot;Hand of God - Staffel 1 [dt./OV]&quot;,&quot;HosterType&quot;:1},{&quot;Id&quot;:&quot;B01M2ZKU3I&quot;,&quot;Name&quot;:&quot;Highschool of the Dead [dt./OV]&quot;,&quot;HosterType&quot;:1},{&quot;Id&quot;:&quot;B00NP9UQG6&quot;,&quot;Name&quot;:&quot;Was nicht passt wird passend gemacht&quot;,&quot;HosterType&quot;:1},{&quot;Id&quot;:&quot;B01K5YXG0Q&quot;,&quot;Name&quot;:&quot;Psych - Staffel 1&quot;,&quot;HosterType&quot;:1},{&quot;Id&quot;:&quot;B06WVJ9FZN&quot;,&quot;Name&quot;:&quot;Hand of God - Staffel 2 [dt./OV]&quot;,&quot;HosterType&quot;:1},{&quot;Id&quot;: [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string amazon_search_expected {
+            get {
+                return ResourceManager.GetString("amazon_search_expected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;pageSource&quot;:&quot;&lt;html&gt;&lt;head&gt;    \n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//fonts.gstatic.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//fonts.googleapis.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//tags-cdn.deployads.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//www.googletagservices.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//www.googletagmanager.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//apis.go [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string mal_season {
