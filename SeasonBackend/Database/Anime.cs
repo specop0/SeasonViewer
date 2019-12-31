@@ -13,5 +13,7 @@ namespace SeasonBackend.Database
         public MalInformation Mal { get; set; }
 
         public HosterInformation[] Hoster { get; set; }
+
+        public DateTime? HosterMinedAt { get; set; }
     }
 }

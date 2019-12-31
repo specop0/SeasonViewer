@@ -50,6 +50,13 @@ namespace SeasonBackend.Miner
             return result;
         }
 
+        public MineHosterResult MineHoster(Anime anime)
+        {
+            var result = new MineHosterResult();
+
+            return result;
+        }
+
         public static Anime[] ParseSeasonAnime(string body, string season)
         {
             var options = new JsonSerializerOptions()

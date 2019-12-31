@@ -27,7 +27,12 @@ namespace SeasonViewer.Data
 
         public ulong MalMembers => this.Model.MalMembers;
 
+        public DateTime? HosterMinedAt => this.Model.HosterMinedAt > 0 ? new DateTime(this.Model.HosterMinedAt) : (DateTime?)null;
+
+        public bool HosterMiningTriggered { get; set; }
+
         public string[] Names { get; set; }
-        public SeasonAnime Model { get; }
+
+        public SeasonAnime Model { get; set; }
     }
 }

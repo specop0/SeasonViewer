@@ -38,6 +38,21 @@ else
                     <label class="col-4">MAL # Members</label>
                     <span class="col-6">@anime.MalMembers</span>
                 </div>
+                <div>
+                    <label class="col-4">Hoster mined at</label>
+                    @if (anime.HosterMinedAt.HasValue)
+                    {
+                        <span class="col-6">@anime.HosterMinedAt</span>
+                    }
+                    else if (anime.HosterMiningTriggered)
+                    {
+                        <span class="col-6">...</span>
+                    }
+                    else
+                    {
+                        <button type="button" @onclick="@(() => HosterMiningRequested(anime))" class="btn"><span class="oi oi-reload" /> Refresh</button>
+                    }
+                </div>
             </div>
         </div>
     }
@@ -50,5 +65,22 @@ else
     protected override async Task OnInitializedAsync()
     {
         this.Animes = (await this.AnimeSeason.GetSeasonAsync()) ?? new Anime[0];
+    }
+
+    protected async Task HosterMiningRequested(Anime anime)
+    {
+        if (anime.HosterMiningTriggered)
+        {
+            return;
+        }
+
+        anime.HosterMiningTriggered = true;
+
+        var response = await this.AnimeSeason.MineHosterAsync(anime);
+        if (response.Anime != null)
+        {
+            anime.Model = response.Anime;
+        }
+        anime.HosterMiningTriggered = false;
     }
 }

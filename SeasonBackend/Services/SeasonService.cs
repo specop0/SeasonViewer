@@ -53,6 +53,30 @@ namespace SeasonBackend
             });
         }
 
+        public override Task<MineHosterResponse> MineHoster(MineHosterRequest request, ServerCallContext context)
+        {
+            return Task.Run(() =>
+            {
+                var response = new MineHosterResponse();
+
+                var id = request.Id;
+
+                var controller = ServicePool.Instance.GetService<DatabaseAccess>();
+                var anime = controller.Do(x => controller.GetAnime(x, id));
+
+                var miner = ServicePool.Instance.GetService<SeleniumMiner>();
+                var mineResult = miner.MineHoster(anime);
+
+                controller.Do(x =>
+                {
+                    controller.UpdateHosters(x, anime, mineResult.Hosters);
+                });
+
+                response.Anime = this.Convert(anime);
+                return response;
+            });
+        }
+
         public SeasonAnime Convert(Anime anime)
         {
             var seasonAnime = new SeasonAnime
@@ -60,7 +84,7 @@ namespace SeasonBackend
                 Id = anime.Id,
             };
 
-            if(anime.Mal != null)
+            if (anime.Mal != null)
             {
                 seasonAnime.MalId = anime.Mal.Id;
                 seasonAnime.MalName = anime.Mal.Name ?? string.Empty; ;
@@ -69,7 +93,25 @@ namespace SeasonBackend
                 seasonAnime.MalMembers = anime.Mal.MemberCount;
             }
 
-            // TODO
+            if (anime.HosterMinedAt.HasValue)
+            {
+                seasonAnime.HosterMinedAt = anime.HosterMinedAt.Value.Ticks;
+            }
+
+            if (anime.Hoster != null)
+            {
+                var hoster = anime.Hoster.Select(x =>
+                {
+                    var hoster = new Hoster();
+
+                    hoster.Id = x.Id;
+                    hoster.Name = x.Name;
+                    hoster.HosterType = x.HosterType;
+
+                    return hoster;
+                });
+                seasonAnime.Hoster.AddRange(hoster);
+            }
 
             return seasonAnime;
         }
