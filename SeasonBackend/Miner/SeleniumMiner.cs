@@ -1,15 +1,12 @@
 ﻿using HtmlAgilityPack;
 using SeasonBackend.Database;
+using SeasonBackend.Protos;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace SeasonBackend.Miner
 {
@@ -118,7 +115,97 @@ namespace SeasonBackend.Miner
             var result = new MineHosterResult();
 
             var hosters = new List<HosterInformation>();
-            hosters.AddRange(this.ParseAmazon(anime));
+
+            //hosters.AddRange(this.ParseAmazon(anime));
+            // amazon
+            {
+                var searchResults = this.ParseDuckDuckGo($"site:amazon.de {anime.Mal.Name} prime video");
+                var midfix = "/dp/";
+                var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.Contains(midfix));
+                if (searchResult != null)
+                {
+                    var id = searchResult.Url.Substring(searchResult.Url.IndexOf(midfix) + midfix.Length).Split("/").FirstOrDefault();
+                    hosters.Add(new HosterInformation
+                    {
+                        HosterType = HosterType.Amazon,
+                        Id = id,
+                        Name = searchResult.Name,
+                        Url = searchResult.Url,
+                    });
+                }
+            }
+
+            // wakanim.tv
+            {
+                var searchResults = this.ParseDuckDuckGo($"site:wakanim.tv {anime.Mal.Name}");
+                var prefix = "https://www.wakanim.tv/de/v2/catalogue/show/";
+                var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix));
+                if (searchResult != null)
+                {
+                    var id = searchResult.Url.Substring(prefix.Length).Split("/").FirstOrDefault();
+                    hosters.Add(new HosterInformation
+                    {
+                        HosterType = HosterType.Wakanim,
+                        Id = id,
+                        Name = searchResult.Name,
+                        Url = searchResult.Url,
+                    });
+                }
+            }
+
+            // netflix
+            {
+                var searchResults = this.ParseDuckDuckGo($"site:netflix.com {anime.Mal.Name}");
+                var prefix = "https://www.netflix.com/title/";
+                var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix));
+                if (searchResult != null)
+                {
+                    var id = searchResult.Url.Substring(prefix.Length).Split("/").FirstOrDefault();
+                    hosters.Add(new HosterInformation
+                    {
+                        HosterType = HosterType.Netflix,
+                        Id = id,
+                        Name = searchResult.Name,
+                        Url = searchResult.Url,
+                    });
+                }
+            }
+
+            // crunchyroll
+            {
+                var searchResults = this.ParseDuckDuckGo($"site:crunchyroll.com {anime.Mal.Name}");
+                var prefix = "https://www.crunchyroll.com/";
+                var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix) && x.Url.Substring(prefix.Length).Split("/").Length == 1);
+                if (searchResult != null)
+                {
+                    var id = searchResult.Url.Substring(prefix.Length).Split("/").FirstOrDefault();
+                    hosters.Add(new HosterInformation
+                    {
+                        HosterType = HosterType.Crunchyroll,
+                        Id = id,
+                        Name = searchResult.Name,
+                        Url = searchResult.Url,
+                    });
+                }
+            }
+
+            // anime-on-demand
+            {
+                var searchResults = this.ParseDuckDuckGo($"site:anime-on-demand.de {anime.Mal.Name}");
+                var prefix = "https://www.anime-on-demand.de/anime/";
+                var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix));
+                if (searchResult != null)
+                {
+                    var id = searchResult.Url.Substring(prefix.Length).Split("/").FirstOrDefault();
+                    hosters.Add(new HosterInformation
+                    {
+                        HosterType = HosterType.AnimeOnDemand,
+                        Id = id,
+                        Name = searchResult.Name,
+                        Url = searchResult.Url,
+                    });
+                }
+            }
 
             result.Hosters = hosters.ToArray();
             return result;
@@ -153,7 +240,7 @@ namespace SeasonBackend.Miner
             document.LoadHtml(pageSource);
 
             var searchResultDiv = document.DocumentNode.SelectSingleNode("//div[@class='s-result-list s-search-results sg-row']");
-            var searchResults = searchResultDiv.SelectNodes("div");
+            IEnumerable<HtmlNode> searchResults = searchResultDiv.SelectNodes("div") ?? Enumerable.Empty<HtmlNode>();
 
             foreach (var searchResult in searchResults)
             {
@@ -170,6 +257,7 @@ namespace SeasonBackend.Miner
                     HosterType = Protos.HosterType.Amazon,
                     Id = amazonId,
                     Name = amazonName,
+                    Url = $"https://www.amazon.de/dp/{amazonId}",
                 };
                 hosterInformations.Add(hosterInformation);
             }
@@ -193,6 +281,62 @@ namespace SeasonBackend.Miner
 
 
             return hosterInformations.ToArray();
+        }
+
+        public DuckDuckGoSearchItem[] ParseDuckDuckGo(string searchQuery)
+        {
+            var request = new DuckDuckGoSearchRequest
+            {
+                Search = searchQuery,
+            };
+
+            var response = this.Miner.PostAsync("duckduckgo", request.ToHttpContent()).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var body = response.Content.ReadAsStringAsync().Result;
+                return ParseDuckDuckGoSearch(body);
+            }
+
+            return new DuckDuckGoSearchItem[0];
+        }
+
+        public static DuckDuckGoSearchItem[] ParseDuckDuckGoSearch(string body)
+        {
+            var result = new List<DuckDuckGoSearchItem>();
+
+            var pageSourceResult = body.Deserialize<DuckDuckGoSearchResult>();
+            var pageSource = pageSourceResult.PageSource;
+
+            var document = new HtmlDocument();
+            document.LoadHtml(pageSource);
+
+            var searchResultDiv = document.DocumentNode.SelectSingleNode("//div[@class='results js-results']");
+            IEnumerable<HtmlNode> searchResults = searchResultDiv.SelectNodes("div") ?? Enumerable.Empty<HtmlNode>();
+
+            foreach (var searchResult in searchResults)
+            {
+                var resultLink = searchResult.SelectSingleNode(".//a");
+                if (resultLink == null)
+                {
+                    continue;
+                }
+
+                var href = resultLink.GetAttributeValue("href", "");
+                var name = resultLink.InnerText;
+                if (string.IsNullOrEmpty(href) || string.IsNullOrEmpty(name))
+                {
+                    continue;
+                }
+
+                var resultItem = new DuckDuckGoSearchItem
+                {
+                    Name = name,
+                    Url = href,
+                };
+                result.Add(resultItem);
+            }
+
+            return result.ToArray();
         }
     }
 }

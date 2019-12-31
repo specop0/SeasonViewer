@@ -6,6 +6,7 @@ public class Plugins {
         return new IPlugin[]{
             new PageSourcePlugin(),
             new AmazonPlugin(),
+            new DuckDuckGoPlugin(),
         };
     }
 }

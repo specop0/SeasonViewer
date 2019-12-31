@@ -79,6 +79,24 @@ namespace SeasonTests.Backend.Miner {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {&quot;pageSource&quot;:&quot;&lt;html&gt;&lt;head&gt;&lt;meta http-equiv=\&quot;content-type\&quot; content=\&quot;text/html; charset=utf-8\&quot;&gt;&lt;title&gt;site:wakanim.tv Fate/Grand Order: Zettai Majuu Sensen Babylonia at DuckDuckGo&lt;\/title&gt;&lt;link rel=\&quot;stylesheet\&quot; href=\&quot;/s1844.css\&quot; type=\&quot;text/css\&quot;&gt;&lt;link rel=\&quot;stylesheet\&quot; href=\&quot;/r1844.css\&quot; type=\&quot;text/css\&quot;&gt;&lt;meta name=\&quot;robots\&quot; content=\&quot;noindex,nofollow\&quot;&gt;&lt;meta name=\&quot;referrer\&quot; content=\&quot;origin\&quot;&gt;&lt;meta name=\&quot;apple-mobile-web-app-title\&quot; content=\&quot;site:wakanim.tv Fate/Grand Order: Zettai Majuu Se [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string duckduckgo_search {
+            get {
+                return ResourceManager.GetString("duckduckgo_search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{&quot;Url&quot;:&quot;https://www.wakanim.tv/sc/v2/catalogue/show/522/fategrand-order-absolute-demonic-front-babylonia&quot;,&quot;Name&quot;:&quot;Infos - Fate/Grand Order Absolute Demonic Front: Babylonia ...&quot;},{&quot;Url&quot;:&quot;https://www.wakanim.tv/de/v2/catalogue/show/521/fategrand-order-absolute-demonic-front-babylonia-omu&quot;,&quot;Name&quot;:&quot;Infos - Fate/Grand Order Absolute Demonic Front: Babylonia ...&quot;},{&quot;Url&quot;:&quot;https://www.wakanim.tv/de/v2/catalogue/show/521/fategrand-order-absolute-demonic-front-babylonia-omu?IdSeason=942&quot;,&quot;Name&quot;:&quot;Infos - Fate/Grand [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string duckduckgo_search_expected {
+            get {
+                return ResourceManager.GetString("duckduckgo_search_expected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;pageSource&quot;:&quot;&lt;html&gt;&lt;head&gt;    \n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//fonts.gstatic.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//fonts.googleapis.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//tags-cdn.deployads.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//www.googletagservices.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//www.googletagmanager.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//apis.go [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string mal_season {

@@ -104,9 +104,10 @@ namespace SeasonBackend
                 {
                     var hoster = new Hoster();
 
-                    hoster.Id = x.Id;
-                    hoster.Name = x.Name;
+                    hoster.Id = x.Id ?? string.Empty;
+                    hoster.Name = x.Name ?? string.Empty;
                     hoster.HosterType = x.HosterType;
+                    hoster.Url = x.Url ?? string.Empty;
 
                     return hoster;
                 });

@@ -76,6 +76,26 @@ namespace SeasonTests.Backend.Miner
             }
         }
 
+        [Test]
+        public void TestParseDuckDuckGoSearchFromJson()
+        {
+            var input = TestResources.duckduckgo_search;
+            var searchResult = SeleniumMiner.ParseDuckDuckGoSearch(input);
+
+            var expectedResults = JsonSerializer.Deserialize<DuckDuckGoSearchItem[]>(TestResources.duckduckgo_search_expected);
+            CollectionAssert.IsNotEmpty(expectedResults, "unit test implementation");
+            Assert.AreEqual(expectedResults.Length, searchResult.Length);
+
+            for (var i = 0; i < expectedResults.Length; i++)
+            {
+                var expected = expectedResults[i];
+                var actual = searchResult[i];
+
+                Assert.AreEqual(expected.Name, actual.Name);
+                Assert.AreEqual(expected.Url, actual.Url);
+            }
+        }
+
         [Test, Ignore("Miner must be listening")]
         public void TestParseAnime()
         {

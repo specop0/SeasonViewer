@@ -18,19 +18,6 @@ namespace SeasonViewer.Data
 
         public string HosterName => Enum.GetName(typeof(HosterType), this.Model.HosterType);
 
-        public string Url
-        {
-            get
-            {
-                switch (this.Model.HosterType)
-                {
-                    case HosterType.Amazon:
-                        return $"https://www.amazon.de/dp/{this.Id}";
-                    default:
-                        return null;
-                }
-            }
-        }
-
+        public string Url => this.Model.Url;
     }
 }

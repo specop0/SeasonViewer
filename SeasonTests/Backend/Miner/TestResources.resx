@@ -124,6 +124,12 @@
   <data name="amazon_search_expected" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>amazon-search-expected.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="duckduckgo_search" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>duckduckgo-search.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="duckduckgo_search_expected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>duckduckgo-search-expected.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="mal_season" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>mal-season.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
