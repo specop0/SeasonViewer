@@ -40,17 +40,26 @@ else
                 </div>
                 <div>
                     <label class="col-4">Hoster mined at</label>
-                    @if (anime.HosterMinedAt.HasValue)
-                    {
-                        <span class="col-6">@anime.HosterMinedAt</span>
-                    }
-                    else if (anime.HosterMiningTriggered)
+                    @if (anime.HosterMiningTriggered)
                     {
                         <span class="col-6">...</span>
                     }
                     else
                     {
-                        <button type="button" @onclick="@(() => HosterMiningRequested(anime))" class="btn"><span class="oi oi-reload" /> Refresh</button>
+                        <span class="col-6">
+                            @anime.HosterMinedAt 
+                            <button type="button" @onclick="@(() => HosterMiningRequested(anime))" class="btn"><span class="oi oi-reload" /> Refresh</button>
+                        </span>
+                    }
+                </div>
+                <div>
+                    @foreach (var hoster in anime.Hoster)
+                    {
+                        <div>
+                            <a href="@hoster.Url">
+                                <span>@hoster.Name @@ @hoster.HosterName</span>
+                            </a>
+                        </div>
                     }
                 </div>
             </div>

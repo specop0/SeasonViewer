@@ -120,6 +120,7 @@ namespace SeasonBackend.Miner
             var hosters = new List<HosterInformation>();
             hosters.AddRange(this.ParseAmazon(anime));
 
+            result.Hosters = hosters.ToArray();
             return result;
         }
 

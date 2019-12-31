@@ -33,6 +33,19 @@ namespace SeasonViewer.Data
 
         public string[] Names { get; set; }
 
-        public SeasonAnime Model { get; set; }
+        private SeasonAnime model;
+        public SeasonAnime Model
+        {
+            get => this.model;
+            set
+            {
+                this.model = value;
+
+                this.Hoster.Clear();
+                this.Hoster.AddRange(this.model.Hoster.Select(x => new HosterView(x)));
+            }
+        }
+
+        public List<HosterView> Hoster { get; } = new List<HosterView>();
     }
 }
