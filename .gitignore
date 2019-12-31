@@ -1,0 +1,19 @@
+# Build files
+bin/
+obj/
+*.dll
+*.exe
+target/
+
+# VS files
+.vs/
+*.user
+
+# NuGet
+packages/
+
+# Chrome Extension
+*.crx
+
+# Real data
+*.db

@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option csharp_namespace = "SeasonBackend.Protos";
+
+package Anime;
+
+service SeasonProvider {
+  rpc GetSeason (SeasonAnimeRequest) returns (SeasonAnimeResponse);
+}
+
+message SeasonAnimeRequest {
+  string name = 1;
+}
+
+message SeasonAnimeResponse {
+  repeated SeasonAnime Animes = 1;
+}
+
+message SeasonAnime {
+ int64 id = 1;
+ string malId = 2;
+ string malName = 3;
+ string malImageUrl = 4;
+ uint32 malScore = 5;
+ uint64 malMembers = 6;
+ int64 lastParsed = 7;
+ repeated Hoster hoster = 8;
+}
+
+message Hoster {
+ string id = 1;
+ string name = 2;
+ string url = 3;
+}

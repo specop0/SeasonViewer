@@ -1,0 +1,54 @@
+﻿@page "/"
+
+@inject AnimeSeasonService AnimeSeason
+
+@if (this.Animes == null)
+{
+    <h1>Loading ... </h1>
+}
+else
+{
+    foreach (var anime in this.Animes)
+    {
+        <div id="@anime.Id" class="grid-container">
+            <div class="grid-item grid-item-span">
+                <a href="@anime.MalUrl">@anime.Name</a>
+            </div>
+            <div class="grid-item">
+                <img src="@anime.ImageUrl" alt="@anime.Name" />
+            </div>
+            <div class="grid-item">
+                <div>
+                    <label class="col-4">Name</label>
+                    <span class="col-6">@anime.Name</span>
+                </div>
+                <div>
+                    <label class="col-4">Id</label>
+                    <span class="col-6">@anime.Id</span>
+                </div>
+                <div>
+                    <label class="col-4">Mal Id</label>
+                    <span class="col-6">@anime.MalId</span>
+                </div>
+                <div>
+                    <label class="col-4">MAL Score</label>
+                    <span class="col-6">@anime.MalScore</span>
+                </div>
+                <div>
+                    <label class="col-4">MAL # Members</label>
+                    <span class="col-6">@anime.MalMembers</span>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code{
+
+    public Anime[] Animes { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.Animes = (await this.AnimeSeason.GetSeasonAsync()) ?? new Anime[0];
+    }
+}
