@@ -77,6 +77,10 @@ namespace SeasonBackend.Miner
 
                 var imageElement = animeNode.SelectSingleNode("div[@class='image']/a/img");
                 var imageUrl = imageElement.GetAttributeValue("src", "");
+                if (string.IsNullOrEmpty(imageUrl))
+                {
+                    imageUrl = imageElement.GetAttributeValue("data-src", "");
+                }
 
                 var scoreAndMemberDiv = animeNode.SelectSingleNode("div[@class='information']/div[@class='scormem']");
                 var memberDiv = scoreAndMemberDiv.SelectSingleNode("span[@title='Members']");

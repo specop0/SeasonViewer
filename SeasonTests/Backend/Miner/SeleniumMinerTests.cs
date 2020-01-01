@@ -19,7 +19,7 @@ namespace SeasonTests.Backend.Miner
 
             var expectedAnimes = JsonSerializer.Deserialize<Anime[]>(TestResources.mal_season_expected);
             CollectionAssert.IsNotEmpty(expectedAnimes, "unit test implementation");
-            //System.IO.File.WriteAllText(@"C:\Users\SpecOp0\Desktop\mal-season-expected.json", JsonSerializer.Serialize(actualAnimes, new JsonSerializerOptions { IgnoreNullValues = true }));
+            //System.IO.File.WriteAllText(@"C:\Users\SpecOp0\Desktop\mal-season-expected.json", JsonSerializer.Serialize(actualAnimes, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true }));
 
             Assert.AreEqual(expectedAnimes.Length, actualAnimes.Length);
 
@@ -39,6 +39,8 @@ namespace SeasonTests.Backend.Miner
                 Assert.AreEqual(default(int), actual.Id);
 
                 Assert.IsNull(actual.Hoster);
+
+                Assert.IsNotNull(expected.Mal.ImageUrl, $"missing image for {expected.Mal.Name}");
             }
         }
 

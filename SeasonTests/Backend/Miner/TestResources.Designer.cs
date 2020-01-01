@@ -106,7 +106,25 @@ namespace SeasonTests.Backend.Miner {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{&quot;Id&quot;:0,&quot;Season&quot;:&quot;a47c7f3a-9f7c-41a6-aa30-f1cf9255c5bb&quot;,&quot;Mal&quot;:{&quot;Id&quot;:&quot;38408&quot;,&quot;Name&quot;:&quot;Boku no Hero Academia 4th Season&quot;,&quot;ImageUrl&quot;:&quot;https://cdn.myanimelist.net/r/167x242/images/anime/1315/102961.webp?s=44e2b5e3c48f907284dd189f498cc462&quot;,&quot;MemberCount&quot;:375565,&quot;Score&quot;:826}},{&quot;Id&quot;:0,&quot;Season&quot;:&quot;a47c7f3a-9f7c-41a6-aa30-f1cf9255c5bb&quot;,&quot;Mal&quot;:{&quot;Id&quot;:&quot;39597&quot;,&quot;Name&quot;:&quot;Sword Art Online: Alicization - War of Underworld&quot;,&quot;ImageUrl&quot;:&quot;https://cdn.myanimelist.net/r/167x242/images/anime/1630/103417.webp?s=986f996c398866a677f59641f [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to [
+        ///  {
+        ///    &quot;Id&quot;: 0,
+        ///    &quot;Season&quot;: &quot;dc2b4149-d4fd-4601-a117-e3ef56d409bb&quot;,
+        ///    &quot;Mal&quot;: {
+        ///      &quot;Id&quot;: &quot;38408&quot;,
+        ///      &quot;Name&quot;: &quot;Boku no Hero Academia 4th Season&quot;,
+        ///      &quot;ImageUrl&quot;: &quot;https://cdn.myanimelist.net/r/167x242/images/anime/1315/102961.webp?s=44e2b5e3c48f907284dd189f498cc462&quot;,
+        ///      &quot;MemberCount&quot;: 375565,
+        ///      &quot;Score&quot;: 826,
+        ///      &quot;EpisodesCount&quot;: 25
+        ///    }
+        ///  },
+        ///  {
+        ///    &quot;Id&quot;: 0,
+        ///    &quot;Season&quot;: &quot;dc2b4149-d4fd-4601-a117-e3ef56d409bb&quot;,
+        ///    &quot;Mal&quot;: {
+        ///      &quot;Id&quot;: &quot;39597&quot;,
+        ///      &quot;Name&quot;: &quot;Sword A [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string mal_season_expected {
             get {
