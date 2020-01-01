@@ -18,6 +18,28 @@ namespace SeasonViewer.Data
 
         public string HosterName => Enum.GetName(typeof(HosterType), this.Model.HosterType);
 
+        public string HosterImageUrl
+        {
+            get
+            {
+                switch (this.Model.HosterType)
+                {
+                    case HosterType.Amazon:
+                        return "icons/amazon.ico";
+                    case HosterType.AnimeOnDemand:
+                        return "icons/anime-on-demand.ico";
+                    case HosterType.Crunchyroll:
+                        return "icons/crunchyroll.ico";
+                    case HosterType.Netflix:
+                        return "icons/netflix.ico";
+                    case HosterType.Wakanim:
+                        return "icons/wakanim.ico";
+                    default:
+                        return "";
+                }
+            }
+        }
+
         public string Url => this.Model.Url;
     }
 }

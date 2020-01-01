@@ -17,5 +17,7 @@ namespace SeasonBackend.Database
         public ulong MemberCount { get; set; }
 
         public uint Score { get; set; }
+
+        public ulong EpisodesCount { get; set; }
     }
 }

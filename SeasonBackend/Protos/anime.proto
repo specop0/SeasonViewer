@@ -7,6 +7,7 @@ package Anime;
 service SeasonProvider {
 	rpc GetSeason (SeasonAnimeRequest) returns (SeasonAnimeResponse);
 	rpc MineHoster (MineHosterRequest) returns (MineHosterResponse);
+	rpc EditHoster (EditHosterRequest) returns (EditHosterResponse);
 }
 
 message SeasonAnimeRequest {
@@ -25,6 +26,15 @@ message MineHosterResponse {
 	SeasonAnime Anime = 1;
 }
 
+message EditHosterRequest {
+	int64 id = 1;
+	repeated Hoster hosters = 2;
+}
+
+message EditHosterResponse {
+	SeasonAnime Anime = 1;
+}
+
 message SeasonAnime {
 	int64 id = 1;
 	string malId = 2;
@@ -32,8 +42,9 @@ message SeasonAnime {
 	string malImageUrl = 4;
 	uint32 malScore = 5;
 	uint64 malMembers = 6;
-	repeated Hoster hoster = 7;
-	int64 hosterMinedAt = 8;
+	uint64 malEpisodesCount = 7;
+	repeated Hoster hoster = 8;
+	int64 hosterMinedAt = 9;
 }
 
 message Hoster {

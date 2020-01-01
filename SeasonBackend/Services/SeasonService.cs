@@ -77,6 +77,33 @@ namespace SeasonBackend
             });
         }
 
+        public override Task<EditHosterResponse> EditHoster(EditHosterRequest request, ServerCallContext context)
+        {
+            return Task.Run(() =>
+            {
+                var response = new EditHosterResponse();
+
+                var id = request.Id;
+
+                var controller = ServicePool.Instance.GetService<DatabaseAccess>();
+
+                var anime = controller.Do(x =>
+                {
+                    var anime = controller.GetAnime(x, id);
+
+                    var miner = ServicePool.Instance.GetService<SeleniumMiner>();
+                    var hosters = miner.ParseHoster(anime, request.Hosters);
+
+                    controller.UpdateHosters(x, anime, hosters);
+
+                    return anime;
+                });
+
+                response.Anime = this.Convert(anime);
+                return response;
+            });
+        }
+
         public SeasonAnime Convert(Anime anime)
         {
             var seasonAnime = new SeasonAnime
@@ -91,6 +118,7 @@ namespace SeasonBackend
                 seasonAnime.MalImageUrl = anime.Mal.ImageUrl ?? string.Empty;
                 seasonAnime.MalScore = anime.Mal.Score;
                 seasonAnime.MalMembers = anime.Mal.MemberCount;
+                seasonAnime.MalEpisodesCount = anime.Mal.EpisodesCount;
             }
 
             if (anime.HosterMinedAt.HasValue)

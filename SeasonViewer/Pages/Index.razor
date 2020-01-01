@@ -8,9 +8,14 @@
 }
 else
 {
+    <div>
+        <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">@(this.IsMineMissingTriggered ? "..." : "Mine Missing")</button>
+        <button type="button" class="btn btn-secondary" @onclick="@(() => this.Animes = this.Animes.OrderByDescending(x => x.MalScore).ToArray())">Sort by Score</button>
+        <button type="button" class="btn btn-secondary" @onclick="@(() => this.Animes = this.Animes.OrderByDescending(x => x.MalMembers).ToArray())">Sort by # Members</button>
+    </div>
     foreach (var anime in this.Animes)
     {
-        <div id="@anime.Id" class="grid-container">
+        <div id="@anime.Id" class="grid-container" style="margin-bottom: 50px">
             <div class="grid-item grid-item-span">
                 <a href="@anime.MalUrl">@anime.Name</a>
             </div>
@@ -23,12 +28,8 @@ else
                     <span class="col-6">@anime.Name</span>
                 </div>
                 <div>
-                    <label class="col-4">Id</label>
-                    <span class="col-6">@anime.Id</span>
-                </div>
-                <div>
-                    <label class="col-4">Mal Id</label>
-                    <span class="col-6">@anime.MalId</span>
+                    <label class="col-4"># Episodes</label>
+                    <span class="col-6">@anime.MalEpisodesCount</span>
                 </div>
                 <div>
                     <label class="col-4">MAL Score</label>
@@ -47,19 +48,49 @@ else
                     else
                     {
                         <span class="col-6">
-                            @anime.HosterMinedAt 
-                            <button type="button" @onclick="@(() => HosterMiningRequested(anime))" class="btn"><span class="oi oi-reload" /> Refresh</button>
+                            @anime.HosterMinedAt
+                            <button type="button" @onclick="@(() => HosterMiningRequested(anime))" class="btn btn-secondary"><span class="oi oi-reload" /> Refresh</button>
                         </span>
                     }
                 </div>
                 <div>
-                    @foreach (var hoster in anime.Hoster)
+                    @if (!anime.HosterMiningTriggered)
                     {
-                        <div>
-                            <a href="@hoster.Url">
-                                <span>@hoster.Name @@ @hoster.HosterName</span>
-                            </a>
-                        </div>
+                        @if (anime.HosterEditRequested)
+                        {
+                            <button type="button" @onclick="@(() => anime.HosterEdit.Add(new Hoster()))">Add</button>
+                            <div>
+                                @foreach (var hoster in anime.HosterEdit)
+                                {
+                                    <div>
+                                        <button type="button" @onclick="@(() => anime.HosterEdit.Remove(hoster))">Remove</button>
+                                        <input type="text" class="col-6" @bind="@hoster.Url" />
+                                        <input type="text" class="col-3" @bind="@hoster.Name" />
+                                    </div>
+                                }
+                            </div>
+                            <button type="button" @onclick="@(() => ManualHosterEditRequested(anime))" class="btn btn-primary">OK</button>
+                            <button type="button" @onclick="@(() => anime.HosterEditRequested = false)" class="btn btn-secondary">Cancel</button>
+                        }
+                        else
+                        {
+                            <button type="button" @onclick="@(() => {
+                                                              anime.HosterEditRequested = true;
+                                                              anime.HosterEdit.Clear();
+                                                              anime.HosterEdit.AddRange(anime.Hoster.Select(x => new Hoster { Id = x.Id, HosterType = x.Model.HosterType, Name = x.Name, Url = x.Url }));
+                                                          })" class="btn btn-secondary">
+                                Edit
+                            </button>
+                            @foreach (var hoster in anime.Hoster)
+                            {
+                                <div class="col-12">
+                                    <a href="@hoster.Url">
+                                        <img src="@hoster.HosterImageUrl" width="16" height="16" />
+                                        <span> @hoster.Name @@ @hoster.HosterName</span>
+                                    </a>
+                                </div>
+                            }
+                        }
                     }
                 </div>
             </div>
@@ -86,10 +117,46 @@ else
         anime.HosterMiningTriggered = true;
 
         var response = await this.AnimeSeason.MineHosterAsync(anime);
-        if (response.Anime != null)
+        if (response?.Anime != null)
         {
             anime.Model = response.Anime;
         }
         anime.HosterMiningTriggered = false;
+    }
+
+    protected async Task ManualHosterEditRequested(Anime anime)
+    {
+        var response = await this.AnimeSeason.EditHosterAsync(anime);
+
+        if (response?.Anime != null)
+        {
+            anime.Model = response.Anime;
+        }
+        anime.HosterEditRequested = false;
+    }
+
+    public bool IsMineMissingTriggered { get; set; }
+
+    protected async Task MineMissingRequested()
+    {
+        if (this.IsMineMissingTriggered)
+        {
+            return;
+        }
+
+        this.IsMineMissingTriggered = true;
+
+        var animesCopy = this.Animes.ToArray();
+        foreach (var anime in animesCopy)
+        {
+            if (anime.HosterMinedAt.HasValue)
+            {
+                continue;
+            }
+
+            await HosterMiningRequested(anime);
+        }
+
+        this.IsMineMissingTriggered = false;
     }
 }

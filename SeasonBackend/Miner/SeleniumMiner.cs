@@ -92,6 +92,17 @@ namespace SeasonBackend.Miner
                     score = (uint)(scoreDouble * 100d);
                 }
 
+                ulong episodesCount = 0L;
+                var episodesCountSpan = animeNode.SelectSingleNode(".//div[@class='eps']/a/span");
+                if (!string.IsNullOrEmpty(episodesCountSpan.InnerText))
+                {
+                    var number = episodesCountSpan.InnerText.Split(" ").FirstOrDefault();
+                    if (ulong.TryParse(number, out var episodesCountParsed))
+                    {
+                        episodesCount = episodesCountParsed;
+                    }
+                }
+
                 var anime = new Anime
                 {
                     Season = season,
@@ -102,6 +113,7 @@ namespace SeasonBackend.Miner
                         ImageUrl = imageUrl,
                         MemberCount = memberCount,
                         Score = score,
+                        EpisodesCount = episodesCount,
                     }
                 };
                 animes.Add(anime);
@@ -209,6 +221,99 @@ namespace SeasonBackend.Miner
 
             result.Hosters = hosters.ToArray();
             return result;
+        }
+
+        public HosterInformation[] ParseHoster(Anime anime, IEnumerable<Hoster> hostersInput)
+        {
+            var hosters = new List<HosterInformation>();
+
+            foreach (var hosterInput in hostersInput)
+            {
+                var url = hosterInput.Url;
+                if (string.IsNullOrEmpty(url))
+                {
+                    continue;
+                }
+
+                var hoster = new HosterInformation
+                {
+                    Url = url,
+                    Name = anime.Mal.Name,
+                    HosterType = hosterInput.HosterType,
+                    Id = Guid.NewGuid().ToString()
+                };
+                if (!string.IsNullOrEmpty(hosterInput.Name))
+                {
+                    hoster.Name = hosterInput.Name;
+                }
+                if (!string.IsNullOrEmpty(hosterInput.Id))
+                {
+                    hoster.Id = hosterInput.Id;
+                }
+
+                // amazon
+                {
+                    var prefix = "https://www.amazon.de/";
+                    if (url.StartsWith(prefix))
+                    {
+                        hoster.HosterType = HosterType.Amazon;
+
+                        var midfix = "/dp/";
+                        if (url.Contains(midfix))
+                        {
+                            var id = url.Substring(url.IndexOf(midfix) + midfix.Length).Split("/").FirstOrDefault();
+                            if (!string.IsNullOrEmpty(id))
+                            {
+                                hoster.Id = id;
+                            }
+                        }
+                    }
+                }
+
+                // wakanim.tv
+                {
+                    var prefix = "https://www.wakanim.tv/de/v2/catalogue/show/";
+                    if (url.StartsWith(prefix))
+                    {
+                        hoster.HosterType = HosterType.Wakanim;
+                        hoster.Id = url.Substring(prefix.Length).Split("/").FirstOrDefault();
+                    }
+                }
+
+                // netflix
+                {
+                    var prefix = "https://www.netflix.com/de/title/";
+                    if (url.StartsWith(prefix))
+                    {
+                        hoster.HosterType = HosterType.Netflix;
+                        hoster.Id = url.Substring(prefix.Length).Split("/").FirstOrDefault();
+                    }
+                }
+
+                // crunchyroll
+                {
+                    var prefix = "https://www.crunchyroll.com/de/";
+                    if (url.StartsWith(prefix))
+                    {
+                        hoster.HosterType = HosterType.Crunchyroll;
+                        hoster.Id = url.Substring(prefix.Length).Split("/").FirstOrDefault();
+                    }
+                }
+
+                // anime-on-demand
+                {
+                    var prefix = "https://www.anime-on-demand.de/anime/";
+                    if (url.StartsWith(prefix))
+                    {
+                        hoster.HosterType = HosterType.AnimeOnDemand;
+                        hoster.Id = url.Substring(prefix.Length).Split("/").FirstOrDefault();
+                    }
+                }
+
+                hosters.Add(hoster);
+            }
+
+            return hosters.ToArray();
         }
 
         public HosterInformation[] ParseAmazon(Anime anime)

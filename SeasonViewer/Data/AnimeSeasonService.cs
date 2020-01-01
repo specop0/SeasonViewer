@@ -36,5 +36,18 @@ namespace SeasonViewer.Data
             var response = await this.Client.MineHosterAsync(mineHosterRequest);
             return response;
         }
+
+        public async Task<EditHosterResponse> EditHosterAsync(Anime anime)
+        {
+            var editHosterRequest = new EditHosterRequest
+            {
+                Id = anime.Id,
+            };
+            editHosterRequest.Hosters.AddRange(anime.HosterEdit);
+
+            var response = await this.Client.EditHosterAsync(editHosterRequest);
+
+            return response;
+        }
     }
 }
