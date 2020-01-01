@@ -8,158 +8,107 @@
 }
 else
 {
-    <div>
-        <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">@(this.IsUpdateSeasonRequested ? "..." : "Update MAL")</button>
-        <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">@(this.IsMineMissingTriggered ? "..." : "Mine Missing")</button>
-        <button type="button" class="btn btn-secondary" @onclick="@(() => this.Animes = this.Animes.OrderByDescending(x => x.MalScore).ToArray())">Sort by Score</button>
-        <button type="button" class="btn btn-secondary" @onclick="@(() => this.Animes = this.Animes.OrderByDescending(x => x.MalMembers).ToArray())">Sort by # Members</button>
-        <button type="button" class="btn btn-secondary" @onclick="@(() => this.Animes = this.Animes.OrderBy(x => x.Name).ToArray())">Sort by Name</button>
-        <button type="button" class="btn btn-secondary" @onclick="@GroupByHoster">Group by Hoster</button>
-    </div>
-    @if (this.IsGroupByHosterActive && this.AnimesByHoster != null)
+<div>
+    <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">@(this.IsUpdateSeasonRequested ? "..." : "Update MAL")</button>
+    <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">@(this.IsMineMissingTriggered ? "..." : "Mine Missing")</button>
+    <select @bind="OrderBy">
+        <option value="@OrderCriteria.OrderByNone">None</option>
+        <option value="@OrderCriteria.OrderByName">Name</option>
+        <option value="@OrderCriteria.OrderByScore">Score</option>
+        <option value="@OrderCriteria.OrderByMember"># Member</option>
+    </select>
+    <select @bind="GroupBy">
+        <option value="@GroupCriteria.GroupByNone">None</option>
+        <option value="@GroupCriteria.GroupByHoster">Hoster</option>
+    </select>
+    <select @bind="FilterBy">
+        <option value="@FilterCriteria.FilterByNone">None</option>
+        <option value="@FilterCriteria.FilterByPlan2Watch">Plan 2 Watch</option>
+    </select>
+    <button type="button" class="btn btn-secondary" @onclick="@GetData">Apply</button>
+</div>
+    foreach (var anime in this.Animes)
     {
-        foreach (var hosterType in this.SortedHosterTypes)
-        {
-            @if (this.AnimesByHoster.TryGetValue(hosterType, out var animes))
-            {
-                <div class="col-12" style="font-weight: bold">
-                    <img src="@HosterView.HosterTypeToImageUrl(hosterType)" width="32" height="32"/>
-                    Hoster @hosterType
+        <div id="@anime.Id" class="grid-container" style="margin-bottom: 50px">
+            <div class="grid-item grid-item-span">
+                <a href="@anime.MalUrl">@anime.Name</a>
+            </div>
+            <div class="grid-item">
+                <img src="@anime.ImageUrl" alt="@anime.Name" />
+            </div>
+            <div class="grid-item">
+                <div>
+                    <label class="col-4">Name</label>
+                    <span class="col-6">@anime.Name</span>
                 </div>
-                foreach (var anime in animes)
-                {
-                    <div id="@anime.Id" class="grid-container" style="margin-bottom: 50px">
-                        <div class="grid-item grid-item-span">
-                            <a href="@anime.MalUrl">@anime.Name</a>
-                        </div>
-                        <div class="grid-item">
-                            <img src="@anime.ImageUrl" alt="@anime.Name" />
-                        </div>
-                        <div class="grid-item">
+                <div>
+                    <label class="col-4"># Episodes</label>
+                    <span class="col-6">@anime.MalEpisodesCount</span>
+                </div>
+                <div>
+                    <label class="col-4">MAL Score</label>
+                    <span class="col-6">@anime.MalScore</span>
+                </div>
+                <div>
+                    <label class="col-4">MAL # Members</label>
+                    <span class="col-6">@anime.MalMembers</span>
+                </div>
+                <div>
+                    <label class="col-4">Hoster mined at</label>
+                    @if (anime.HosterMiningTriggered)
+                    {
+                        <span class="col-6">...</span>
+                    }
+                    else
+                    {
+                        <span class="col-6">
+                            @anime.HosterMinedAt
+                            <button type="button" @onclick="@(() => HosterMiningRequested(anime))" class="btn btn-secondary"><span class="oi oi-reload" /> Refresh</button>
+                        </span>
+                    }
+                </div>
+                <div>
+                    @if (!anime.HosterMiningTriggered)
+                    {
+                        @if (anime.HosterEditRequested)
+                        {
+                            <button type="button" @onclick="@(() => anime.HosterEdit.Add(new Hoster()))">Add</button>
                             <div>
-                                <label class="col-4">Name</label>
-                                <span class="col-6">@anime.Name</span>
-                            </div>
-                            <div>
-                                <label class="col-4"># Episodes</label>
-                                <span class="col-6">@anime.MalEpisodesCount</span>
-                            </div>
-                            <div>
-                                <label class="col-4">MAL Score</label>
-                                <span class="col-6">@anime.MalScore</span>
-                            </div>
-                            <div>
-                                <label class="col-4">MAL # Members</label>
-                                <span class="col-6">@anime.MalMembers</span>
-                            </div>
-                            <div>
-                                <label class="col-4">Hoster mined at</label>
-                                <span class="col-6">
-                                    @anime.HosterMinedAt
-                                </span>
-                            </div>
-                            <div>
-                                @foreach (var hoster in anime.Hoster)
+                                @foreach (var hoster in anime.HosterEdit)
                                 {
-                                    <div class="col-12">
-                                        <a href="@hoster.Url">
-                                            <img src="@hoster.HosterImageUrl" width="16" height="16" />
-                                            <span> @hoster.Name @@ @hoster.HosterName</span>
-                                        </a>
+                                    <div>
+                                        <button type="button" @onclick="@(() => anime.HosterEdit.Remove(hoster))">Remove</button>
+                                        <input type="text" class="col-6" @bind="@hoster.Url" />
+                                        <input type="text" class="col-3" @bind="@hoster.Name" />
                                     </div>
                                 }
                             </div>
-                        </div>
-                    </div>
-                }
-            }
-        }
-    }
-    else
-    {
-        foreach (var anime in this.Animes)
-        {
-            <div id="@anime.Id" class="grid-container" style="margin-bottom: 50px">
-                <div class="grid-item grid-item-span">
-                    <a href="@anime.MalUrl">@anime.Name</a>
-                </div>
-                <div class="grid-item">
-                    <img src="@anime.ImageUrl" alt="@anime.Name" />
-                </div>
-                <div class="grid-item">
-                    <div>
-                        <label class="col-4">Name</label>
-                        <span class="col-6">@anime.Name</span>
-                    </div>
-                    <div>
-                        <label class="col-4"># Episodes</label>
-                        <span class="col-6">@anime.MalEpisodesCount</span>
-                    </div>
-                    <div>
-                        <label class="col-4">MAL Score</label>
-                        <span class="col-6">@anime.MalScore</span>
-                    </div>
-                    <div>
-                        <label class="col-4">MAL # Members</label>
-                        <span class="col-6">@anime.MalMembers</span>
-                    </div>
-                    <div>
-                        <label class="col-4">Hoster mined at</label>
-                        @if (anime.HosterMiningTriggered)
-                        {
-                            <span class="col-6">...</span>
+                            <button type="button" @onclick="@(() => ManualHosterEditRequested(anime))" class="btn btn-primary">OK</button>
+                            <button type="button" @onclick="@(() => anime.HosterEditRequested = false)" class="btn btn-secondary">Cancel</button>
                         }
                         else
                         {
-                            <span class="col-6">
-                                @anime.HosterMinedAt
-                                <button type="button" @onclick="@(() => HosterMiningRequested(anime))" class="btn btn-secondary"><span class="oi oi-reload" /> Refresh</button>
-                            </span>
-                        }
-                    </div>
-                    <div>
-                        @if (!anime.HosterMiningTriggered)
-                        {
-                            @if (anime.HosterEditRequested)
-                            {
-                                <button type="button" @onclick="@(() => anime.HosterEdit.Add(new Hoster()))">Add</button>
-                                <div>
-                                    @foreach (var hoster in anime.HosterEdit)
-                                    {
-                                        <div>
-                                            <button type="button" @onclick="@(() => anime.HosterEdit.Remove(hoster))">Remove</button>
-                                            <input type="text" class="col-6" @bind="@hoster.Url" />
-                                            <input type="text" class="col-3" @bind="@hoster.Name" />
-                                        </div>
-                                    }
-                                </div>
-                                <button type="button" @onclick="@(() => ManualHosterEditRequested(anime))" class="btn btn-primary">OK</button>
-                                <button type="button" @onclick="@(() => anime.HosterEditRequested = false)" class="btn btn-secondary">Cancel</button>
-                            }
-                            else
-                            {
-                                <button type="button" @onclick="@(() => {
+                            <button type="button" @onclick="@(() => {
                                                               anime.HosterEditRequested = true;
                                                               anime.HosterEdit.Clear();
                                                               anime.HosterEdit.AddRange(anime.Hoster.Select(x => new Hoster { Id = x.Id, HosterType = x.Model.HosterType, Name = x.Name, Url = x.Url }));
                                                           })" class="btn btn-secondary">
-                                    Edit
-                                </button>
-                                @foreach (var hoster in anime.Hoster)
-                                {
-                                    <div class="col-12">
-                                        <a href="@hoster.Url">
-                                            <img src="@hoster.HosterImageUrl" width="16" height="16" />
-                                            <span> @hoster.Name @@ @hoster.HosterName</span>
-                                        </a>
-                                    </div>
-                                }
+                                Edit
+                            </button>
+                            @foreach (var hoster in anime.Hoster)
+                            {
+                                <div class="col-12">
+                                    <a href="@hoster.Url">
+                                        <img src="@hoster.HosterImageUrl" width="16" height="16" />
+                                        <span> @hoster.Name @@ @hoster.HosterName</span>
+                                    </a>
+                                </div>
                             }
                         }
-                    </div>
+                    }
                 </div>
             </div>
-        }
+        </div>
     }
 }
 
@@ -167,9 +116,18 @@ else
 
     public Anime[] Animes { get; set; }
 
+    public OrderCriteria OrderBy { get; set; }
+    public GroupCriteria GroupBy { get; set; }
+    public FilterCriteria FilterBy { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        this.Animes = (await this.AnimeSeason.GetSeasonAsync()) ?? new Anime[0];
+        this.Animes = (await this.AnimeSeason.GetSeasonAsync(this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
+    }
+
+    protected async Task GetData()
+    {
+        this.Animes = (await this.AnimeSeason.GetSeasonAsync(this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
     }
 
     public bool IsUpdateSeasonRequested { get; set; }
@@ -181,53 +139,9 @@ else
             return;
         }
 
-        this.Animes = (await this.AnimeSeason.UpdateSeasonAsync()) ?? new Anime[0];
+        this.Animes = (await this.AnimeSeason.UpdateSeasonAsync(this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
 
         this.IsUpdateSeasonRequested = false;
-    }
-
-    public bool IsGroupByHosterActive { get; set; }
-
-    public Dictionary<HosterType, List<Anime>> AnimesByHoster { get; set; }
-
-    public HosterType[] SortedHosterTypes => new[] { HosterType.Amazon, HosterType.Crunchyroll, HosterType.Netflix, HosterType.AnimeOnDemand, HosterType.Wakanim, HosterType.Unknown };
-
-    public async Task GroupByHoster()
-    {
-        if (this.IsGroupByHosterActive)
-        {
-            this.IsGroupByHosterActive = false;
-            return;
-        }
-
-        this.IsGroupByHosterActive = true;
-        var dict = new Dictionary<HosterType, List<Anime>>();
-        foreach (var anime in this.Animes)
-        {
-            foreach (var hoster in anime.Hoster.Select(x => x.Model.HosterType).Distinct())
-            {
-                if (dict.TryGetValue(hoster, out var list))
-                {
-                    list.Add(anime);
-                }
-                else
-                {
-                    dict.Add(hoster, new List<Anime> { anime });
-                }
-            }
-            if (!anime.Hoster.Any())
-            {
-                if (dict.TryGetValue(HosterType.Unknown, out var list))
-                {
-                    list.Add(anime);
-                }
-                else
-                {
-                    dict.Add(HosterType.Unknown, new List<Anime> { anime });
-                }
-            }
-        }
-        this.AnimesByHoster = dict;
     }
 
     protected async Task HosterMiningRequested(Anime anime)

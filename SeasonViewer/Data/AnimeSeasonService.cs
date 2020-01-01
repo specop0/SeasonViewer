@@ -19,18 +19,24 @@ namespace SeasonViewer.Data
 
         private SeasonProviderClient Client { get; }
 
-        public async Task<Anime[]> GetSeasonAsync()
+        public async Task<Anime[]> GetSeasonAsync(OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
         {
             var seasonAnimeRequest = new SeasonAnimeRequest();
             seasonAnimeRequest.Name = "2019/fall";
+            seasonAnimeRequest.OrderCriteria = orderBy;
+            seasonAnimeRequest.GroupCriteria = groupBy;
+            seasonAnimeRequest.FilterCriteria = filterBy;
             var response = await this.Client.GetSeasonAsync(seasonAnimeRequest);
             return response.Animes.Select(x => new Anime(x)).ToArray();
         }
 
-        public async Task<Anime[]> UpdateSeasonAsync()
+        public async Task<Anime[]> UpdateSeasonAsync(OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
         {
             var seasonAnimeRequest = new SeasonAnimeRequest();
             seasonAnimeRequest.Name = "2019/fall";
+            seasonAnimeRequest.OrderCriteria = orderBy;
+            seasonAnimeRequest.GroupCriteria = groupBy;
+            seasonAnimeRequest.FilterCriteria = filterBy;
             var response = await this.Client.UpdateSeasonAsync(seasonAnimeRequest);
             return response.Animes.Select(x => new Anime(x)).ToArray();
         }

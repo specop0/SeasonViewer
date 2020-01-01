@@ -13,6 +13,9 @@ service SeasonProvider {
 
 message SeasonAnimeRequest {
 	string name = 1;
+	OrderCriteria orderCriteria = 2;
+	GroupCriteria groupCriteria = 3;
+	FilterCriteria filterCriteria = 4;
 }
 
 message SeasonAnimeResponse {
@@ -62,4 +65,21 @@ enum HosterType {
 	Crunchyroll = 3;
 	Wakanim = 4;
 	AnimeOnDemand = 5;
+}
+
+enum OrderCriteria {
+	OrderByNone = 0;
+	OrderByScore = 1;
+	OrderByMember = 2;
+	OrderByName = 3;
+}
+
+enum GroupCriteria {
+	GroupByNone = 0;
+	GroupByHoster = 1;
+}
+
+enum FilterCriteria {
+	FilterByNone = 0;
+	FilterByPlan2Watch = 1;
 }

@@ -30,7 +30,7 @@ namespace SeasonBackend
                 var controller = ServicePool.Instance.GetService<DatabaseAccess>();
                 var animes = controller.Do(x =>
                   {
-                      return controller.GetSeasonAnimes(x, season).ToArray();
+                      return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria).ToArray();
                   });
 
                 if (!animes.Any())
@@ -67,7 +67,7 @@ namespace SeasonBackend
                 var animes = controller.Do(x =>
                 {
                     controller.UpdateSeasonAnimes(x, mineResult.Animes);
-                    return controller.GetSeasonAnimes(x, season);
+                    return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
                 });
 
                 response.Animes.AddRange(animes.Select(this.Convert));

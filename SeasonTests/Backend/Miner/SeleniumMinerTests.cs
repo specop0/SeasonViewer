@@ -30,7 +30,6 @@ namespace SeasonTests.Backend.Miner
 
                 Assert.AreEqual(expected.Mal.Id, actual.Mal.Id);
                 Assert.AreEqual(expected.Mal.Name, actual.Mal.Name);
-                Assert.IsNull(actual.Mal.Names);
                 Assert.AreEqual(expected.Mal.ImageUrl, actual.Mal.ImageUrl);
                 Assert.AreEqual(expected.Mal.MemberCount, actual.Mal.MemberCount);
                 Assert.AreEqual(expected.Mal.Score, actual.Mal.Score);

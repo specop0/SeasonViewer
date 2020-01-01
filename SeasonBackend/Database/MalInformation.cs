@@ -10,8 +10,6 @@ namespace SeasonBackend.Database
 
         public string Name { get; set; }
 
-        public string[] Names { get; set; }
-
         public string ImageUrl { get; set; }
 
         public ulong MemberCount { get; set; }
@@ -19,5 +17,7 @@ namespace SeasonBackend.Database
         public uint Score { get; set; }
 
         public ulong EpisodesCount { get; set; }
+
+        public ListStatus Status { get; set; }
     }
 }
