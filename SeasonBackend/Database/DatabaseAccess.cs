@@ -54,6 +54,34 @@ namespace SeasonBackend.Database
             database.GetCollection<Anime>("animes").InsertBulk(animes);
         }
 
+        public LiteCollection<Anime> GetAnimeCollection(LiteDatabase database)
+        {
+            return database.GetCollection<Anime>("animes");
+        }
+
+        public void UpdateSeasonAnimes(LiteDatabase database, Anime[] animes)
+        {
+            var animeDocuments = database.GetCollection<Anime>("animes");
+            foreach (var anime in animes)
+            {
+                var matchingAnime = animeDocuments.FindOne(x => x.Mal.Id == anime.Mal.Id && x.Season == anime.Season);
+                if (matchingAnime != null)
+                {
+                    // update only mal information
+                    matchingAnime.Mal.EpisodesCount = anime.Mal.EpisodesCount;
+                    matchingAnime.Mal.ImageUrl = anime.Mal.ImageUrl;
+                    matchingAnime.Mal.MemberCount = anime.Mal.MemberCount;
+                    matchingAnime.Mal.Name = anime.Mal.Name;
+                    matchingAnime.Mal.Score = anime.Mal.Score;
+                    animeDocuments.Update(matchingAnime);
+                }
+                else
+                {
+                    animeDocuments.Insert(anime);
+                }
+            }
+        }
+
         public void Dispose()
         {
             this.Data?.Dispose();

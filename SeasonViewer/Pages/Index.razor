@@ -9,9 +9,11 @@
 else
 {
     <div>
+        <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">@(this.IsUpdateSeasonRequested? "..." : "Update MAL")</button>
         <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">@(this.IsMineMissingTriggered ? "..." : "Mine Missing")</button>
         <button type="button" class="btn btn-secondary" @onclick="@(() => this.Animes = this.Animes.OrderByDescending(x => x.MalScore).ToArray())">Sort by Score</button>
         <button type="button" class="btn btn-secondary" @onclick="@(() => this.Animes = this.Animes.OrderByDescending(x => x.MalMembers).ToArray())">Sort by # Members</button>
+        <button type="button" class="btn btn-secondary" @onclick="@(() => this.Animes = this.Animes.OrderBy(x => x.Name).ToArray())">Sort by Name</button>
     </div>
     foreach (var anime in this.Animes)
     {
@@ -105,6 +107,20 @@ else
     protected override async Task OnInitializedAsync()
     {
         this.Animes = (await this.AnimeSeason.GetSeasonAsync()) ?? new Anime[0];
+    }
+
+    public bool IsUpdateSeasonRequested { get; set; }
+
+    public async Task UpdateSeasonRequested()
+    {
+        if (this.IsUpdateSeasonRequested)
+        {
+            return;
+        }
+
+        this.Animes = (await this.AnimeSeason.UpdateSeasonAsync()) ?? new Anime[0];
+
+        this.IsUpdateSeasonRequested = false;
     }
 
     protected async Task HosterMiningRequested(Anime anime)

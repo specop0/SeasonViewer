@@ -53,6 +53,29 @@ namespace SeasonBackend
             });
         }
 
+        public override Task<SeasonAnimeResponse> UpdateSeason(SeasonAnimeRequest request, ServerCallContext context)
+        {
+            return Task.Run(() =>
+            {
+                var response = new SeasonAnimeResponse();
+
+                var season = request.Name;
+
+                var controller = ServicePool.Instance.GetService<DatabaseAccess>();
+                var miner = ServicePool.Instance.GetService<SeleniumMiner>();
+                var mineResult = miner.MineSeasonAnime(season);
+                var animes = controller.Do(x =>
+                {
+                    controller.UpdateSeasonAnimes(x, mineResult.Animes);
+                    return controller.GetSeasonAnimes(x, season);
+                });
+
+                response.Animes.AddRange(animes.Select(this.Convert));
+
+                return response;
+            });
+        }
+
         public override Task<MineHosterResponse> MineHoster(MineHosterRequest request, ServerCallContext context)
         {
             return Task.Run(() =>

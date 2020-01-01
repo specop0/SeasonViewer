@@ -27,6 +27,14 @@ namespace SeasonViewer.Data
             return response.Animes.Select(x => new Anime(x)).ToArray();
         }
 
+        public async Task<Anime[]> UpdateSeasonAsync()
+        {
+            var seasonAnimeRequest = new SeasonAnimeRequest();
+            seasonAnimeRequest.Name = "2019/fall";
+            var response = await this.Client.UpdateSeasonAsync(seasonAnimeRequest);
+            return response.Animes.Select(x => new Anime(x)).ToArray();
+        }
+
         public async Task<MineHosterResponse> MineHosterAsync(Anime anime)
         {
             var mineHosterRequest = new MineHosterRequest
