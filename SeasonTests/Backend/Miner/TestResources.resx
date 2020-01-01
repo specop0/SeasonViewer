@@ -130,6 +130,12 @@
   <data name="duckduckgo_search_expected" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>duckduckgo-search-expected.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="mal_list" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>mal-list.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="mal_list_expected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>mal-list-expected.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="mal_season" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>mal-season.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

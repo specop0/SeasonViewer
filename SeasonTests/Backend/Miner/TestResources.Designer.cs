@@ -97,6 +97,63 @@ namespace SeasonTests.Backend.Miner {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {&quot;pageSource&quot;:&quot;&lt;html&gt;&lt;head&gt;\n  &lt;meta name=\&quot;referrer\&quot; content=\&quot;default\&quot;&gt;\n  &lt;style type=\&quot;text/css\&quot;&gt;\n                  \n/*\n// Self-explanatory\n*/\nBODY\n{\nmargin: 0;\ncolor: #000000;\nfont-size: 11.00px;\nfont-family: Verdana, Arial;\nbackground-color: #FFFFFF;\n}\n\n/*\n// Determines the positioning of your list\n*/\n\n#list_surround\n{\nmargin: 0 auto;\nwidth: 920px;\n}\n\n/*\n// All links on your list\n*/\n\na\n{\ncolor: #51819f;\ntext-decoration: none;\n}\n\na:visited\n{\ncolor: #51819f;\ntext- [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string mal_list {
+            get {
+                return ResourceManager.GetString("mal_list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [
+        ///  {
+        ///    &quot;AnimeId&quot;: &quot;25517&quot;,
+        ///    &quot;Status&quot;: 2
+        ///  },
+        ///  {
+        ///    &quot;AnimeId&quot;: &quot;7669&quot;,
+        ///    &quot;Status&quot;: 3
+        ///  },
+        ///  {
+        ///    &quot;AnimeId&quot;: &quot;8481&quot;,
+        ///    &quot;Status&quot;: 3
+        ///  },
+        ///  {
+        ///    &quot;AnimeId&quot;: &quot;6408&quot;,
+        ///    &quot;Status&quot;: 3
+        ///  },
+        ///  {
+        ///    &quot;AnimeId&quot;: &quot;31646&quot;,
+        ///    &quot;Status&quot;: 3
+        ///  },
+        ///  {
+        ///    &quot;AnimeId&quot;: &quot;35180&quot;,
+        ///    &quot;Status&quot;: 3
+        ///  },
+        ///  {
+        ///    &quot;AnimeId&quot;: &quot;38101&quot;,
+        ///    &quot;Status&quot;: 3
+        ///  },
+        ///  {
+        ///    &quot;AnimeId&quot;: &quot;32998&quot;,
+        ///    &quot;Status&quot;: 3
+        ///  },
+        ///  {
+        ///    &quot;AnimeId&quot;: &quot;9776&quot;,
+        ///    &quot;Status&quot;: 3
+        ///  },
+        ///  {
+        ///    &quot;AnimeId&quot;: &quot;11339&quot;,
+        ///    &quot;S [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string mal_list_expected {
+            get {
+                return ResourceManager.GetString("mal_list_expected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;pageSource&quot;:&quot;&lt;html&gt;&lt;head&gt;    \n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//fonts.gstatic.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//fonts.googleapis.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//tags-cdn.deployads.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//www.googletagservices.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//www.googletagmanager.com/\&quot; crossorigin=\&quot;anonymous\&quot;&gt;\n&lt;link rel=\&quot;preconnect\&quot; href=\&quot;//apis.go [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string mal_season {

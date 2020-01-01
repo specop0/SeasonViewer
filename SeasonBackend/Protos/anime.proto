@@ -7,6 +7,7 @@ package Anime;
 service SeasonProvider {
 	rpc GetSeason (SeasonAnimeRequest) returns (SeasonAnimeResponse);
 	rpc UpdateSeason (SeasonAnimeRequest) returns (SeasonAnimeResponse);
+	rpc UpdateMalList (SeasonAnimeRequest) returns (SeasonAnimeResponse);
 	rpc MineHoster (MineHosterRequest) returns (MineHosterResponse);
 	rpc EditHoster (EditHosterRequest) returns (EditHosterResponse);
 }

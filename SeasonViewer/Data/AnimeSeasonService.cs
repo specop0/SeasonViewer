@@ -41,6 +41,17 @@ namespace SeasonViewer.Data
             return response.Animes.Select(x => new Anime(x)).ToArray();
         }
 
+        public async Task<Anime[]> UpdateMalListAsync(OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
+        {
+            var seasonAnimeRequest = new SeasonAnimeRequest();
+            seasonAnimeRequest.Name = "2019/fall";
+            seasonAnimeRequest.OrderCriteria = orderBy;
+            seasonAnimeRequest.GroupCriteria = groupBy;
+            seasonAnimeRequest.FilterCriteria = filterBy;
+            var response = await this.Client.UpdateMalListAsync(seasonAnimeRequest);
+            return response.Animes.Select(x => new Anime(x)).ToArray();
+        }
+
         public async Task<MineHosterResponse> MineHosterAsync(Anime anime)
         {
             var mineHosterRequest = new MineHosterRequest

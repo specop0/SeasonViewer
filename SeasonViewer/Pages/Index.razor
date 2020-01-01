@@ -9,7 +9,8 @@
 else
 {
 <div>
-    <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">@(this.IsUpdateSeasonRequested ? "..." : "Update MAL")</button>
+    <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">@(this.IsUpdateSeasonRequested ? "..." : "Update MAL Season")</button>
+    <button type="button" class="btn btn-secondary" @onclick="@UpdateMalListRequested">@(this.IsUpdateMalListRequested ? "..." : "Update MAL List")</button>
     <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">@(this.IsMineMissingTriggered ? "..." : "Mine Missing")</button>
     <select @bind="OrderBy">
         <option value="@OrderCriteria.OrderByNone">None</option>
@@ -140,6 +141,20 @@ else
         }
 
         this.Animes = (await this.AnimeSeason.UpdateSeasonAsync(this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
+
+        this.IsUpdateSeasonRequested = false;
+    }
+
+    public bool IsUpdateMalListRequested { get; set; }
+
+    public async Task UpdateMalListRequested()
+    {
+        if (this.IsUpdateSeasonRequested)
+        {
+            return;
+        }
+
+        this.Animes = (await this.AnimeSeason.UpdateMalListAsync(this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
 
         this.IsUpdateSeasonRequested = false;
     }

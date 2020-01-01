@@ -76,6 +76,40 @@ namespace SeasonBackend
             });
         }
 
+        public override Task<SeasonAnimeResponse> UpdateMalList(SeasonAnimeRequest request, ServerCallContext context)
+        {
+            return Task.Run(() =>
+            {
+                var response = new SeasonAnimeResponse();
+
+                var season = request.Name;
+
+                var controller = ServicePool.Instance.GetService<DatabaseAccess>();
+                var miner = ServicePool.Instance.GetService<SeleniumMiner>();
+                // TODO get name via request and save it better in database
+                var mineResult = miner.MineMalList("specop0");
+                var animes = controller.Do(x =>
+                {
+                    var animesDocument = controller.GetAnimeCollection(x);
+                    foreach (var listEntry in mineResult)
+                    {
+                        var anime = animesDocument.FindOne(x => x.Mal.Id == listEntry.AnimeId);
+                        if (anime != null)
+                        {
+                            anime.Mal.Status = listEntry.Status;
+                            animesDocument.Update(anime);
+                        }
+                    }
+
+                    return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
+                });
+
+                response.Animes.AddRange(animes.Select(this.Convert));
+
+                return response;
+            });
+        }
+
         public override Task<MineHosterResponse> MineHoster(MineHosterRequest request, ServerCallContext context)
         {
             return Task.Run(() =>

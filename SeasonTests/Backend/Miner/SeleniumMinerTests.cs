@@ -2,6 +2,7 @@
 using SeasonBackend.Database;
 using SeasonBackend.Miner;
 using SeasonBackend.Protos;
+using System;
 using System.Linq;
 using System.Text.Json;
 
@@ -95,6 +96,33 @@ namespace SeasonTests.Backend.Miner
                 Assert.AreEqual(expected.Name, actual.Name);
                 Assert.AreEqual(expected.Url, actual.Url);
             }
+        }
+
+        [Test]
+        public void TestParseMalListFromJson()
+        {
+            var input = TestResources.mal_list;
+            var listEntries = SeleniumMiner.ParseMalList(input);
+
+            Assert.Greater(listEntries.Count(), 1000);
+
+            var expectedResults = JsonSerializer.Deserialize<MalListMineResult[]>(TestResources.mal_list_expected);
+            CollectionAssert.IsNotEmpty(expectedResults, "unit test implementation");
+            Assert.AreEqual(expectedResults.Length, listEntries.Length);
+
+            for (var i = 0; i < expectedResults.Length; i++)
+            {
+                var expected = expectedResults[i];
+                var actual = listEntries[i];
+
+                Assert.AreEqual(expected.AnimeId, actual.AnimeId);
+                Assert.AreEqual(expected.Status, actual.Status);
+            }
+
+            var groupedByStatus = listEntries.GroupBy(x => x.Status).ToDictionary(x => x.Key, x => x.ToArray());
+            var everyValidStatus = Enum.GetValues(typeof(ListStatus)).Cast<ListStatus>().Except(new[] { ListStatus.Unknown });
+            CollectionAssert.AreEquivalent(everyValidStatus, groupedByStatus.Keys);
+            Assert.IsTrue(groupedByStatus.All(x => x.Value.Any()));
         }
 
         [Test, Ignore("Miner must be listening")]

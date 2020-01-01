@@ -126,6 +126,82 @@ namespace SeasonBackend.Miner
             return animes.ToArray();
         }
 
+        public MalListMineResult[] MineMalList(string user)
+        {
+            var result = new MalListMineResult[0];
+
+            var seasonUrl = new Uri("https://myanimelist.net/animelist/" + user);
+            var pageSourceRequest = new MinePageSourceRequest
+            {
+                Url = seasonUrl.ToString()
+            };
+
+            var response = this.Miner.PostAsync("pageSource", pageSourceRequest.ToHttpContent()).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var body = response.Content.ReadAsStringAsync().Result;
+                result = ParseMalList(body);
+            }
+
+            return result;
+        }
+
+        public static MalListMineResult[] ParseMalList(string body)
+        {
+            var pageSourceResult = body.Deserialize<MinePageSourceResult>();
+            var pageSource = pageSourceResult.PageSource;
+
+            var animes = new List<MalListMineResult>();
+
+            var document = new HtmlDocument();
+            document.LoadHtml(pageSource);
+
+            var tables = document.DocumentNode.SelectNodes("//table");
+
+            var currentStatus = ListStatus.Unknown;
+            foreach (var table in tables)
+            {
+                var tableClass = table.GetAttributeValue("class", "");
+                switch (tableClass)
+                {
+                    case "header_cw":
+                        currentStatus = ListStatus.Watching;
+                        break;
+                    case "header_completed":
+                        currentStatus = ListStatus.Completed;
+                        break;
+                    case "header_onhold":
+                        currentStatus = ListStatus.OnHold;
+                        break;
+                    case "header_dropped":
+                        currentStatus = ListStatus.Dropped;
+                        break;
+                    case "header_ptw":
+                        currentStatus = ListStatus.Plan2Watch;
+                        break;
+                }
+
+                var animeTitle = table.SelectSingleNode(".//a[@class='animetitle']");
+
+                if (animeTitle != null)
+                {
+                    var animeLink = animeTitle.GetAttributeValue("href", "");
+                    var animeId = animeLink.Substring("/anime/".Length).Split("/").FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(animeId))
+                    {
+                        animes.Add(new MalListMineResult
+                        {
+                            AnimeId = animeId,
+                            Status = currentStatus
+                        });
+                    }
+                }
+            }
+
+            return animes.ToArray();
+        }
+
         public MineHosterResult MineHoster(Anime anime)
         {
             var result = new MineHosterResult();
