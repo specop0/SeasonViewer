@@ -12,8 +12,9 @@ namespace SeasonBackend.Database
         {
             // https://www.litedb.org/
             this.Data = new LiteDatabase(databaseName);
-            this.Data.GetCollection<Anime>("animes").EnsureIndex(x => x.Season);
-            this.Data.GetCollection<Anime>("animes").EnsureIndex(x => x.Mal.Name);
+            var animeCollection = this.GetAnimeCollection(this.Data);
+            animeCollection.EnsureIndex(x => x.Seasons);
+            animeCollection.EnsureIndex(x => x.Mal.Name);
         }
 
         private LiteDatabase Data { get; }
@@ -35,7 +36,7 @@ namespace SeasonBackend.Database
 
         public IEnumerable<Anime> GetSeasonAnimes(LiteDatabase database, string season, OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
         {
-            var animes = database.GetCollection<Anime>("animes").Find(x => x.Season == season);
+            var animes = database.GetCollection<Anime>("animes").Find(x => x.Seasons != null && x.Seasons.Contains(season) == true);
 
             // filter
             switch (filterBy)
@@ -55,7 +56,7 @@ namespace SeasonBackend.Database
                     animes = animes.OrderByDescending(x => x.Mal.MemberCount);
                     break;
                 case OrderCriteria.OrderByName:
-                    animes = animes.OrderByDescending(x => x.Mal.Name);
+                    animes = animes.OrderBy(x => x.Mal.Name);
                     break;
             }
 
@@ -111,7 +112,7 @@ namespace SeasonBackend.Database
             var animeDocuments = database.GetCollection<Anime>("animes");
             foreach (var anime in animes)
             {
-                var matchingAnime = animeDocuments.FindOne(x => x.Mal.Id == anime.Mal.Id && x.Season == anime.Season);
+                var matchingAnime = animeDocuments.FindOne(x => x.Mal.Id == anime.Mal.Id);
                 if (matchingAnime != null)
                 {
                     // update only mal information

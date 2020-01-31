@@ -8,7 +8,7 @@ namespace SeasonBackend.Database
     {
         public long Id { get; set; }
 
-        public string Season { get; set; }
+        public string[] Seasons { get; set; }
 
         public MalInformation Mal { get; set; }
 
