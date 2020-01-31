@@ -8,11 +8,11 @@ namespace SeasonBackend.Database
     {
         public long Id { get; set; }
 
-        public string[] Seasons { get; set; }
+        public List<string> Seasons { get; set; }
 
         public MalInformation Mal { get; set; }
 
-        public HosterInformation[] Hoster { get; set; }
+        public List<HosterInformation> Hoster { get; set; }
 
         public DateTime? HosterMinedAt { get; set; }
     }

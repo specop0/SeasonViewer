@@ -15,6 +15,7 @@ namespace SeasonBackend.Database
             var animeCollection = this.GetAnimeCollection(this.Data);
             animeCollection.EnsureIndex(x => x.Seasons);
             animeCollection.EnsureIndex(x => x.Mal.Name);
+            animeCollection.EnsureIndex(x => x.Mal.Id);
         }
 
         private LiteDatabase Data { get; }
@@ -36,7 +37,7 @@ namespace SeasonBackend.Database
 
         public IEnumerable<Anime> GetSeasonAnimes(LiteDatabase database, string season, OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
         {
-            var animes = database.GetCollection<Anime>("animes").Find(x => x.Seasons != null && x.Seasons.Contains(season) == true);
+            var animes = database.GetCollection<Anime>("animes").Find(x => x.Seasons.Contains(season) == true);
 
             // filter
             switch (filterBy)
@@ -87,19 +88,39 @@ namespace SeasonBackend.Database
 
         public Anime GetAnime(LiteDatabase database, long id)
         {
-            return database.GetCollection<Anime>("animes").Find(x => x.Id == id).FirstOrDefault();
+            return this.GetAnimeCollection(database).Find(x => x.Id == id).FirstOrDefault();
         }
 
         public void UpdateHosters(LiteDatabase database, Anime anime, HosterInformation[] hosters)
         {
             anime.HosterMinedAt = DateTime.UtcNow;
-            anime.Hoster = hosters;
-            database.GetCollection<Anime>("animes").Update(anime);
+            anime.Hoster = hosters.ToList();
+            this.GetAnimeCollection(database).Update(anime);
         }
 
         public void InsertSeasonAnimes(LiteDatabase database, Anime[] animes)
         {
-            database.GetCollection<Anime>("animes").InsertBulk(animes);
+            var animeCollection = this.GetAnimeCollection(database);
+
+            var animesToUpdate = new List<Anime>();
+            var animesToAdd = new List<Anime>();
+            foreach (var anime in animes)
+            {
+                var matchingAnime = animeCollection.FindOne(x => x.Mal.Id == anime.Mal.Id);
+                if (matchingAnime != null)
+                {
+                    matchingAnime.Mal = anime.Mal;
+                    matchingAnime.Seasons.AddRange(anime.Seasons);
+                    animesToUpdate.Add(matchingAnime);
+                }
+                else
+                {
+                    animesToAdd.Add(anime);
+                }
+            }
+
+            animeCollection.InsertBulk(animesToAdd);
+            animeCollection.Update(animesToUpdate);
         }
 
         public LiteCollection<Anime> GetAnimeCollection(LiteDatabase database)

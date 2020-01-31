@@ -109,7 +109,7 @@ namespace SeasonBackend.Miner
 
                 var anime = new Anime
                 {
-                    Seasons = new[] { season },
+                    Seasons = new List<string> { season },
                     Mal = new MalInformation
                     {
                         Id = malId.ToString(),
