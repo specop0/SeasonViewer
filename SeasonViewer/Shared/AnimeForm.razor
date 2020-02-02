@@ -1,0 +1,121 @@
+﻿@inject AnimeSeasonService AnimeSeason
+
+<div id="@this.Anime.Id" class="grid-container" style="margin-bottom: 50px">
+    <div class="grid-item grid-item-span">
+        <a href="@this.Anime.MalUrl">@this.Anime.Name</a>
+    </div>
+    <div class="grid-item">
+        <img src="@this.Anime.ImageUrl" alt="@this.Anime.Name" />
+    </div>
+    <div class="grid-item">
+        <div>
+            <label class="col-4">Name</label>
+            <span class="col-6">@this.Anime.Name</span>
+        </div>
+        <div>
+            <label class="col-4"># Episodes</label>
+            <span class="col-6">@this.Anime.MalEpisodesCount</span>
+        </div>
+        <div>
+            <label class="col-4">MAL Score</label>
+            <span class="col-6">@this.Anime.MalScore</span>
+        </div>
+        <div>
+            <label class="col-4">MAL # Members</label>
+            <span class="col-6">@this.Anime.MalMembers</span>
+        </div>
+        <div>
+            <label class="col-4">Hoster mined at</label>
+            @if (this.Anime.HosterMiningTriggered)
+            {
+                <span class="col-6">...</span>
+            }
+            else
+            {
+                <span class="col-6">
+                    @this.Anime.HosterMinedAt
+                    <button type="button" @onclick="@(() => this.HosterMiningRequested(this.Anime))" class="btn btn-secondary"><span class="oi oi-reload" /> Refresh</button>
+                </span>
+            }
+        </div>
+        <div>
+            @if (!this.Anime.HosterMiningTriggered)
+            {
+                @if (this.Anime.HosterEditRequested)
+                {
+                    <button type="button" @onclick="@(() => this.Anime.HosterEdit.Add(new Hoster()))">Add</button>
+                    <div>
+                        @foreach (var hoster in this.Anime.HosterEdit)
+                        {
+                            <div>
+                                <button type="button" @onclick="@(() => this.Anime.HosterEdit.Remove(hoster))">Remove</button>
+                                <input type="text" class="col-6" @bind="@hoster.Url" />
+                                <input type="text" class="col-3" @bind="@hoster.Name" />
+                            </div>
+                        }
+                    </div>
+                    <button type="button" @onclick="@(() => this.ManualHosterEditRequested(this.Anime))" class="btn btn-primary">OK</button>
+                    <button type="button" @onclick="@(() => this.Anime.HosterEditRequested = false)" class="btn btn-secondary">Cancel</button>
+                }
+                else
+                {
+                    <button type="button" @onclick="@(() => {
+                                                              this.Anime.HosterEditRequested = true;
+                                                              this.Anime.HosterEdit.Clear();
+                                                              this.Anime.HosterEdit.AddRange(this.Anime.Hoster.Select(x => new Hoster { Id = x.Id, HosterType = x.Model.HosterType, Name = x.Name, Url = x.Url }));
+                                                          })" class="btn btn-secondary">
+                        Edit
+                    </button>
+                    @foreach (var hoster in this.Anime.Hoster)
+                    {
+                        <div class="col-12">
+                            <a href="@hoster.Url">
+                                <img src="@hoster.HosterImageUrl" width="16" height="16" />
+                                <span> @hoster.Name @@ @hoster.HosterName</span>
+                            </a>
+                        </div>
+                    }
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Anime Anime { get; set; }
+
+    protected async Task HosterMiningRequested(Anime anime)
+    {
+        await HosterMiningRequested(anime, this.AnimeSeason);
+    }
+
+    public static async Task HosterMiningRequested(Anime anime, AnimeSeasonService animeSeason)
+    {
+        if (anime.HosterMiningTriggered)
+        {
+            return;
+        }
+
+        anime.HosterMiningTriggered = true;
+
+        var response = await animeSeason.MineHosterAsync(anime);
+        if (response?.Anime != null)
+        {
+            anime.Model = response.Anime;
+        }
+        anime.HosterMiningTriggered = false;
+    }
+
+    protected async Task ManualHosterEditRequested(Anime anime)
+    {
+        var response = await this.AnimeSeason.EditHosterAsync(anime);
+
+        if (response?.Anime != null)
+        {
+            anime.Model = response.Anime;
+        }
+        anime.HosterEditRequested = false;
+    }
+
+}
