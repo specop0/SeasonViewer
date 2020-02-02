@@ -35,7 +35,7 @@ namespace SeasonTests.Backend.Miner
                 Assert.AreEqual(expected.Mal.MemberCount, actual.Mal.MemberCount);
                 Assert.AreEqual(expected.Mal.Score, actual.Mal.Score);
 
-                Assert.AreEqual(season, actual.Season);
+                CollectionAssert.AreEqual(new[] { season }, actual.Seasons);
                 Assert.AreEqual(default(int), actual.Id);
 
                 Assert.IsNull(actual.Hoster);
