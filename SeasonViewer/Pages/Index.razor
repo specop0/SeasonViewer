@@ -1,4 +1,5 @@
-﻿@page "/"
+﻿@page "/{RequestName}"
+@page "/"
 
 @inject AnimeSeasonService AnimeSeason
 
@@ -8,26 +9,26 @@
 }
 else
 {
-<div>
-    <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">@(this.IsUpdateSeasonRequested ? "..." : "Update MAL Season")</button>
-    <button type="button" class="btn btn-secondary" @onclick="@UpdateMalListRequested">@(this.IsUpdateMalListRequested ? "..." : "Update MAL List")</button>
-    <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">@(this.IsMineMissingTriggered ? "..." : "Mine Missing")</button>
-    <select @bind="OrderBy">
-        <option value="@OrderCriteria.OrderByNone">None</option>
-        <option value="@OrderCriteria.OrderByName">Name</option>
-        <option value="@OrderCriteria.OrderByScore">Score</option>
-        <option value="@OrderCriteria.OrderByMember"># Member</option>
-    </select>
-    <select @bind="GroupBy">
-        <option value="@GroupCriteria.GroupByNone">None</option>
-        <option value="@GroupCriteria.GroupByHoster">Hoster</option>
-    </select>
-    <select @bind="FilterBy">
-        <option value="@FilterCriteria.FilterByNone">None</option>
-        <option value="@FilterCriteria.FilterByPlan2Watch">Plan 2 Watch</option>
-    </select>
-    <button type="button" class="btn btn-secondary" @onclick="@GetData">Apply</button>
-</div>
+    <div>
+        <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">@(this.IsUpdateSeasonRequested ? "..." : "Update MAL Season")</button>
+        <button type="button" class="btn btn-secondary" @onclick="@UpdateMalListRequested">@(this.IsUpdateMalListRequested ? "..." : "Update MAL List")</button>
+        <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">@(this.IsMineMissingTriggered ? "..." : "Mine Missing")</button>
+        <select @bind="OrderBy">
+            <option value="@OrderCriteria.OrderByNone">None</option>
+            <option value="@OrderCriteria.OrderByName">Name</option>
+            <option value="@OrderCriteria.OrderByScore">Score</option>
+            <option value="@OrderCriteria.OrderByMember"># Member</option>
+        </select>
+        <select @bind="GroupBy">
+            <option value="@GroupCriteria.GroupByNone">None</option>
+            <option value="@GroupCriteria.GroupByHoster">Hoster</option>
+        </select>
+        <select @bind="FilterBy">
+            <option value="@FilterCriteria.FilterByNone">None</option>
+            <option value="@FilterCriteria.FilterByPlan2Watch">Plan 2 Watch</option>
+        </select>
+        <button type="button" class="btn btn-secondary" @onclick="@GetData">Apply</button>
+    </div>
     foreach (var anime in this.Animes)
     {
         <div id="@anime.Id" class="grid-container" style="margin-bottom: 50px">
@@ -121,14 +122,40 @@ else
     public GroupCriteria GroupBy { get; set; }
     public FilterCriteria FilterBy { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    [Parameter]
+    public string RequestName { get; set; }
+
+    protected override async Task OnParametersSetAsync()
     {
-        this.Animes = (await this.AnimeSeason.GetSeasonAsync(this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
+        if (string.IsNullOrWhiteSpace(this.RequestName))
+        {
+            var time = DateTime.Now - TimeSpan.FromDays(30.5 * 3);
+            var monthToSeason = new Dictionary<int, string> {
+                { 1, "winter" },
+                { 2, "winter" },
+                { 3, "winter" },
+                { 4, "spring" },
+                { 5, "spring" },
+                { 6, "spring" },
+                { 7, "summer" },
+                { 8, "summer" },
+                { 9, "summer" },
+                { 10, "fall" },
+                { 11, "fall" },
+                { 12, "fall" },
+            };
+            this.RequestName = $"{time.Year}/{monthToSeason[time.Month]}";
+        }
+        else
+        {
+            this.RequestName = this.RequestName.Replace("-", "/");
+        }
+        this.Animes = (await this.AnimeSeason.GetSeasonAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
     }
 
     protected async Task GetData()
     {
-        this.Animes = (await this.AnimeSeason.GetSeasonAsync(this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
+        this.Animes = (await this.AnimeSeason.GetSeasonAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
     }
 
     public bool IsUpdateSeasonRequested { get; set; }
@@ -140,7 +167,7 @@ else
             return;
         }
 
-        this.Animes = (await this.AnimeSeason.UpdateSeasonAsync(this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
+        this.Animes = (await this.AnimeSeason.UpdateSeasonAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
 
         this.IsUpdateSeasonRequested = false;
     }
@@ -154,7 +181,7 @@ else
             return;
         }
 
-        this.Animes = (await this.AnimeSeason.UpdateMalListAsync(this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
+        this.Animes = (await this.AnimeSeason.UpdateMalListAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
 
         this.IsUpdateSeasonRequested = false;
     }

@@ -19,10 +19,10 @@ namespace SeasonViewer.Data
 
         private SeasonProviderClient Client { get; }
 
-        public async Task<Anime[]> GetSeasonAsync(OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
+        public async Task<Anime[]> GetSeasonAsync(string request, OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
         {
             var seasonAnimeRequest = new SeasonAnimeRequest();
-            seasonAnimeRequest.Name = "2019/fall";
+            seasonAnimeRequest.Name = request;
             seasonAnimeRequest.OrderCriteria = orderBy;
             seasonAnimeRequest.GroupCriteria = groupBy;
             seasonAnimeRequest.FilterCriteria = filterBy;
@@ -30,10 +30,10 @@ namespace SeasonViewer.Data
             return response.Animes.Select(x => new Anime(x)).ToArray();
         }
 
-        public async Task<Anime[]> UpdateSeasonAsync(OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
+        public async Task<Anime[]> UpdateSeasonAsync(string request, OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
         {
             var seasonAnimeRequest = new SeasonAnimeRequest();
-            seasonAnimeRequest.Name = "2019/fall";
+            seasonAnimeRequest.Name = request;
             seasonAnimeRequest.OrderCriteria = orderBy;
             seasonAnimeRequest.GroupCriteria = groupBy;
             seasonAnimeRequest.FilterCriteria = filterBy;
@@ -41,10 +41,10 @@ namespace SeasonViewer.Data
             return response.Animes.Select(x => new Anime(x)).ToArray();
         }
 
-        public async Task<Anime[]> UpdateMalListAsync(OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
+        public async Task<Anime[]> UpdateMalListAsync(string request, OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
         {
             var seasonAnimeRequest = new SeasonAnimeRequest();
-            seasonAnimeRequest.Name = "2019/fall";
+            seasonAnimeRequest.Name = request;
             seasonAnimeRequest.OrderCriteria = orderBy;
             seasonAnimeRequest.GroupCriteria = groupBy;
             seasonAnimeRequest.FilterCriteria = filterBy;
