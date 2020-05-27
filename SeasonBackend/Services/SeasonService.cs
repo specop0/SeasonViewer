@@ -63,12 +63,38 @@ namespace SeasonBackend
 
                 var controller = ServicePool.Instance.GetService<DatabaseAccess>();
                 var miner = ServicePool.Instance.GetService<SeleniumMiner>();
-                var mineResult = miner.MineSeasonAnime(season);
-                var animes = controller.Do(x =>
+
+                IEnumerable<Anime> animes;
+                if (Season.IsPlanToWatch(season))
                 {
-                    controller.UpdateSeasonAnimes(x, mineResult.Animes);
-                    return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
-                });
+                    animes = controller.Do(x =>
+                    {
+                        return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
+                    });
+
+                    var animesToUpdate = animes.Where(x => x.Mal.Name == "< UNKNOWN >").ToList();
+                    if (!animesToUpdate.Any())
+                    {
+                        animesToUpdate = animes.ToList();
+                    }
+
+                    var mineResult = miner.MineAnimes(animesToUpdate);
+
+                    animes = controller.Do(x =>
+                    {
+                        controller.InsertSeasonAnimes(x, mineResult);
+                        return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
+                    });
+                }
+                else
+                {
+                    var mineResult = miner.MineSeasonAnime(season);
+                    animes = controller.Do(x =>
+                    {
+                        controller.UpdateSeasonAnimes(x, mineResult.Animes);
+                        return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
+                    });
+                }
 
                 response.Animes.AddRange(animes.Select(this.Convert));
 
@@ -91,6 +117,7 @@ namespace SeasonBackend
                 var animes = controller.Do(x =>
                 {
                     var animesDocument = controller.GetAnimeCollection(x);
+                    var unknownAnimes = new List<Anime>();
                     foreach (var listEntry in mineResult)
                     {
                         var anime = animesDocument.FindOne(x => x.Mal.Id == listEntry.AnimeId);
@@ -99,6 +126,24 @@ namespace SeasonBackend
                             anime.Mal.Status = listEntry.Status;
                             animesDocument.Update(anime);
                         }
+                        else
+                        {
+                            unknownAnimes.Add(new Anime
+                            {
+                                Seasons = new List<string>(),
+                                Mal = new MalInformation
+                                {
+                                    Id = listEntry.AnimeId,
+                                    Status = listEntry.Status,
+                                    Name = "< UNKNOWN >",
+                                }
+                            });
+                        }
+                    }
+
+                    if (unknownAnimes.Any())
+                    {
+                        controller.InsertSeasonAnimes(x, unknownAnimes);
                     }
 
                     return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);

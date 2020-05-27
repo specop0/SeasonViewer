@@ -27,6 +27,126 @@ namespace SeasonBackend.Miner
             }
         }
 
+        public Anime[] MineAnimes(ICollection<Anime> animes)
+        {
+            var foundAnimes = new List<Anime>();
+
+            foreach (var anime in animes)
+            {
+                var newAnime = this.MineAnime(anime.Mal.Id);
+                if(newAnime != null)
+                {
+                    newAnime.Mal.Status = anime.Mal.Status;
+                    foundAnimes.Add(newAnime);
+                }
+            }
+
+            return foundAnimes.ToArray();
+        }
+
+        private Anime MineAnime(string id)
+        {
+            Anime anime = null;
+            var requestUrl = new Uri($"https://myanimelist.net/anime/{id}");
+
+
+            var pageSourceRequest = new MinePageSourceRequest
+            {
+                Url = requestUrl.ToString()
+            };
+
+            var response = this.Miner.PostAsync("pageSource", pageSourceRequest.ToHttpContent()).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var body = response.Content.ReadAsStringAsync().Result;
+                anime = ParseAnime(body);
+            }
+
+            return anime;
+        }
+
+        public static Anime ParseAnime(string body)
+        {
+            Anime anime = null;
+
+            var pageSourceResult = body.Deserialize<MinePageSourceResult>();
+            var pageSource = pageSourceResult.PageSource;
+
+            var document = new HtmlDocument();
+            document.LoadHtml(pageSource);
+
+            var contentWrapper = document.DocumentNode.SelectSingleNode("//div[@id='contentWrapper']");
+
+            var animeName = contentWrapper.SelectSingleNode(".//span[@itemprop='name']").GetDirectInnerText();
+
+            var malId = contentWrapper.SelectSingleNode(".//input[@id='myinfo_anime_id']").GetAttributeValue("value", "");
+
+            var border = contentWrapper.SelectSingleNode(".//td[@class='borderClass']/div");
+            var imageElement = border.SelectSingleNode(".//img");
+            var imageUrl = imageElement.GetAttributeValue("src", "");
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                imageUrl = imageElement.GetAttributeValue("data-src", "");
+            }
+
+            var episodesCountRow = border.SelectSingleNode(".//span[text()='Episodes:']");
+            episodesCountRow = episodesCountRow.ParentNode.ChildNodes[2];
+            var episodesCountText = episodesCountRow.GetDirectInnerText()?.Replace(" ", "")?.Replace("\n", "");
+            ulong episodesCount = 0L;
+            if (!string.IsNullOrEmpty(episodesCountText))
+            {
+                if (ulong.TryParse(episodesCountText, out var episodesCountParsed))
+                {
+                    episodesCount = episodesCountParsed;
+                }
+            }
+
+            var statisticsHeader = border.SelectSingleNode("./h2[text()='Statistics']");
+            var statisticsIndex = border.ChildNodes.IndexOf(statisticsHeader);
+
+            var scoreRow = border.ChildNodes.ElementAt(statisticsIndex + 2);
+            var scoreTextElement = scoreRow.SelectSingleNode("./span[@itemprop='ratingValue']");
+            uint score = 0;
+            if(scoreTextElement != null)
+            {
+                var scoreText = scoreTextElement.GetDirectInnerText();
+                if (double.TryParse(scoreText, NumberStyles.Number, NumberFormatInfo.InvariantInfo, out var scoreDouble))
+                {
+                    score = (uint)(scoreDouble * 100d);
+                }
+            }
+
+            var memberCountRow = border.ChildNodes.ElementAt(statisticsIndex + 8);
+            var memberCountText = memberCountRow.GetDirectInnerText()?.Replace(" ", "")?.Replace("\n", "");
+            ulong memberCount = 0L;
+            if (!string.IsNullOrEmpty(memberCountText))
+            {
+                if (double.TryParse(memberCountText, NumberStyles.Number, NumberFormatInfo.InvariantInfo, out var memberCountDouble))
+                {
+                    memberCount = (ulong)memberCountDouble;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(malId))
+            {
+                anime = new Anime
+                {
+                    Seasons = new List<string>(),
+                    Mal = new MalInformation
+                    {
+                        Id = malId,
+                        Name = animeName,
+                        ImageUrl = imageUrl,
+                        MemberCount = memberCount,
+                        Score = score,
+                        EpisodesCount = episodesCount,
+                    }
+                };
+            }
+
+            return anime;
+        }
+
         public SeasonAnimeMineResult MineSeasonAnime(string season)
         {
             var result = new SeasonAnimeMineResult();

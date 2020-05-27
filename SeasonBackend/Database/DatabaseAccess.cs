@@ -37,7 +37,15 @@ namespace SeasonBackend.Database
 
         public IEnumerable<Anime> GetSeasonAnimes(LiteDatabase database, string season, OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
         {
-            var animes = database.GetCollection<Anime>("animes").Find(x => x.Seasons.Contains(season) == true);
+            IEnumerable<Anime> animes;
+            if(Season.IsPlanToWatch(season))
+            {
+                animes = database.GetCollection<Anime>("animes").Find(x => x.Mal.Status == ListStatus.Plan2Watch);
+            }
+            else
+            {
+                animes = database.GetCollection<Anime>("animes").Find(x => x.Seasons.Contains(season) == true);
+            }
 
             // filter
             switch (filterBy)
@@ -66,7 +74,9 @@ namespace SeasonBackend.Database
             {
                 case GroupCriteria.GroupByHoster:
                     var hosterOrder = new[] { HosterType.Amazon, HosterType.Crunchyroll, HosterType.Netflix, HosterType.AnimeOnDemand, HosterType.Wakanim, HosterType.Unknown };
-                    animes = animes.SelectMany(x =>
+                    animes = animes
+                        .Where(x => x.Hoster != null)
+                        .SelectMany(x =>
                     {
                         var hosterTypes = x.Hoster.Select(x => x.HosterType).Distinct().ToList();
                         if (!hosterTypes.Any())
@@ -98,7 +108,7 @@ namespace SeasonBackend.Database
             this.GetAnimeCollection(database).Update(anime);
         }
 
-        public void InsertSeasonAnimes(LiteDatabase database, Anime[] animes)
+        public void InsertSeasonAnimes(LiteDatabase database, ICollection<Anime> animes)
         {
             var animeCollection = this.GetAnimeCollection(database);
 
