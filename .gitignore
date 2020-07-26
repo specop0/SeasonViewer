@@ -5,6 +5,10 @@ obj/
 *.exe
 target/
 
+.settings
+.classpath
+.project
+
 # VS files
 .vs/
 *.user
@@ -12,7 +16,9 @@ target/
 # NuGet
 packages/
 
-# Chrome Extension
+# WebDriver
+geckodriver
+chromedriver.exe
 *.crx
 
 # Real data

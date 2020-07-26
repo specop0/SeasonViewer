@@ -2,7 +2,7 @@ package anime.seleniumminer.main;
 
 import anime.seleniumminer.plugin.IPlugin;
 import anime.seleniumminer.plugin.Plugins;
-import anime.seleniumminer.plugin.webdriver.ChromeDriverEx;
+import anime.seleniumminer.plugin.webdriver.FirefoxDriverEx;
 import anime.seleniumminer.plugin.webdriver.IWebDriver;
 import anime.seleniumminer.routes.Routes;
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class Main {
                 settingsFilename = args[0];
             }
 
-            IWebDriver driver = ChromeDriverEx.GetNewWebDriver();
+            IWebDriver driver = FirefoxDriverEx.GetNewWebDriver();
             IPlugin[] plugins = Plugins.GetAllPlugins();
             IMineController controller = new MineController(driver, plugins);
 
