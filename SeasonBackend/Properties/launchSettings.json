@@ -3,7 +3,7 @@
     "SeasonBackend": {
       "commandName": "Project",
       "launchBrowser": false,
-      "applicationUrl": "https://localhost:23000",
+      "applicationUrl": "http://localhost:23000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "seleniumMinerUrl": "http://localhost:22471/mine/"

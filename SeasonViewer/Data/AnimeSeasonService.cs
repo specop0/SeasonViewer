@@ -11,6 +11,8 @@ namespace SeasonViewer.Data
     {
         public AnimeSeasonService()
         {
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
             var options = new GrpcChannelOptions();
             var channel = GrpcChannel.ForAddress(Environment.GetEnvironmentVariable("seasonBackendUrl"), options);
 
