@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR=$(pwd)
+DIR=$(dirname "$(readlink -f "$0")")
 
 if [ -f /usr/bin/lxterminal ]; then
   lxterminal --working-directory=$DIR/SeasonBackend -e "dotnet run" &
