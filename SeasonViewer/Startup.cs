@@ -1,5 +1,7 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,6 +30,12 @@ namespace SeasonViewer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var pathBase = Environment.GetEnvironmentVariable("pathBase");
+            if (!string.IsNullOrEmpty(pathBase))
+            {
+                app.UsePathBase(new PathString(pathBase));
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -14,4 +14,4 @@ else
 fi
 
 sleep 5
-xdg-open http://localhost:5000
+xdg-open http://localhost:5000/season
