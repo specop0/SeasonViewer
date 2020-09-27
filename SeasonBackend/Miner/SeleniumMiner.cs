@@ -181,7 +181,7 @@ namespace SeasonBackend.Miner
 
             foreach (var animeNode in animeNodes)
             {
-                var titleElement = animeNode.SelectSingleNode("div/div[@class='title']/p/a");
+                var titleElement = animeNode.SelectSingleNode("div/div[@class='title']/h2/a");
 
                 var title = titleElement.InnerText;
                 var malUrl = titleElement.GetAttributeValue("href", "");

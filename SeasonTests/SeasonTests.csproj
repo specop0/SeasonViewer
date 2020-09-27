@@ -15,18 +15,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Backend\Miner\TestResources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>TestResources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Backend\Miner\TestResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>TestResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Backend\Miner\amazon-search-expected.json" />
+    <EmbeddedResource Include="Backend\Miner\amazon-search.json" />
+    <EmbeddedResource Include="Backend\Miner\anime.json" />
+    <EmbeddedResource Include="Backend\Miner\duckduckgo-search-expected.json" />
+    <EmbeddedResource Include="Backend\Miner\duckduckgo-search.json" />
+    <EmbeddedResource Include="Backend\Miner\mal-list-expected.json" />
+    <EmbeddedResource Include="Backend\Miner\mal-list.json" />
+    <EmbeddedResource Include="Backend\Miner\mal-season-expected.json" />
+    <EmbeddedResource Include="Backend\Miner\mal-season.json" />
   </ItemGroup>
 
 </Project>

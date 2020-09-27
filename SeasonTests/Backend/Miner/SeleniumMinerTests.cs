@@ -1,19 +1,29 @@
-﻿using NUnit.Framework;
-using SeasonBackend.Database;
-using SeasonBackend.Miner;
-using SeasonBackend.Protos;
-using System;
-using System.Linq;
-using System.Text.Json;
-
-namespace SeasonTests.Backend.Miner
+﻿namespace SeasonTests.Backend.Miner
 {
-    class SeleniumMinerTests : TestBase
+    using NUnit.Framework;
+    using SeasonBackend.Database;
+    using SeasonBackend.Miner;
+    using SeasonBackend.Protos;
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Text.Json;
+
+    public class SeleniumMinerTests : TestBase
     {
+        protected string GetResource(params string[] path)
+        {
+            var name = this.GetType().Namespace + "." + string.Join(".", path);
+            var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
+            var reader = new StreamReader(stream);
+            var content = reader.ReadToEnd();
+            return content;
+        }
+
         [Test]
         public void TestParseSingleAnimeFromJson()
         {
-            var input = TestResources.anime;
+            var input = this.GetResource("anime.json");
             var actualAnime = SeleniumMiner.ParseAnime(input);
 
             Assert.IsNotNull(actualAnime);
@@ -28,12 +38,12 @@ namespace SeasonTests.Backend.Miner
         [Test]
         public void TestParseAnimeFromJson()
         {
-            var input = TestResources.mal_season;
+            var input = this.GetResource("mal-season.json");
             var season = this.GetUniqueName();
             var actualAnimes = SeleniumMiner.ParseSeasonAnime(input, season);
             CollectionAssert.IsNotEmpty(actualAnimes);
 
-            var expectedAnimes = JsonSerializer.Deserialize<Anime[]>(TestResources.mal_season_expected);
+            var expectedAnimes = JsonSerializer.Deserialize<Anime[]>(this.GetResource("mal-season-expected.json"));
             CollectionAssert.IsNotEmpty(expectedAnimes, "unit test implementation");
             //System.IO.File.WriteAllText(@"C:\Users\SpecOp0\Desktop\mal-season-expected.json", JsonSerializer.Serialize(actualAnimes, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true }));
 
@@ -62,7 +72,7 @@ namespace SeasonTests.Backend.Miner
         [Test]
         public void TestParseAmazonFromJson([Values(true, false)] bool exactMatch)
         {
-            var input = TestResources.amazon_search;
+            var input = this.GetResource("amazon-search.json");
             var anime = new Anime { Mal = new MalInformation { Name = exactMatch ? "Psycho-Pass 3" : "Psycho-Pass" } };
             var hosterInformations = SeleniumMiner.ParseAmazonSearch(anime, input);
 
@@ -76,7 +86,7 @@ namespace SeasonTests.Backend.Miner
             }
             else
             {
-                var expectedHosterInformations = JsonSerializer.Deserialize<HosterInformation[]>(TestResources.amazon_search_expected);
+                var expectedHosterInformations = JsonSerializer.Deserialize<HosterInformation[]>(this.GetResource("amazon-search-expected.json"));
                 CollectionAssert.IsNotEmpty(expectedHosterInformations, "unit test implementation");
 
                 Assert.AreEqual(expectedHosterInformations.Length, hosterInformations.Length);
@@ -96,10 +106,10 @@ namespace SeasonTests.Backend.Miner
         [Test]
         public void TestParseDuckDuckGoSearchFromJson()
         {
-            var input = TestResources.duckduckgo_search;
+            var input = this.GetResource("duckduckgo-search.json");
             var searchResult = SeleniumMiner.ParseDuckDuckGoSearch(input);
 
-            var expectedResults = JsonSerializer.Deserialize<DuckDuckGoSearchItem[]>(TestResources.duckduckgo_search_expected);
+            var expectedResults = JsonSerializer.Deserialize<DuckDuckGoSearchItem[]>(this.GetResource("duckduckgo-search-expected.json"));
             CollectionAssert.IsNotEmpty(expectedResults, "unit test implementation");
             Assert.AreEqual(expectedResults.Length, searchResult.Length);
 
@@ -116,12 +126,12 @@ namespace SeasonTests.Backend.Miner
         [Test]
         public void TestParseMalListFromJson()
         {
-            var input = TestResources.mal_list;
+            var input = this.GetResource("mal-list.json");
             var listEntries = SeleniumMiner.ParseMalList(input);
 
             Assert.Greater(listEntries.Count(), 1000);
 
-            var expectedResults = JsonSerializer.Deserialize<MalListMineResult[]>(TestResources.mal_list_expected);
+            var expectedResults = JsonSerializer.Deserialize<MalListMineResult[]>(this.GetResource("mal-list-expected.json"));
             CollectionAssert.IsNotEmpty(expectedResults, "unit test implementation");
             Assert.AreEqual(expectedResults.Length, listEntries.Length);
 
@@ -143,10 +153,14 @@ namespace SeasonTests.Backend.Miner
         [Test, Ignore("Miner must be listening")]
         public void TestParseAnime()
         {
-            var season = "2019/fall";
+            var season = "2020/summer";
+            Environment.SetEnvironmentVariable("seleniumMinerUrl", "http://localhost:22471/mine/");
             var testee = new SeleniumMiner();
             var animes = testee.MineSeasonAnime(season).Animes;
             CollectionAssert.IsNotEmpty(animes);
+            System.IO.File.WriteAllText(
+                "expected.json",
+                JsonSerializer.Serialize(animes, new JsonSerializerOptions { WriteIndented = true, IgnoreNullValues = true }));
         }
     }
 }
