@@ -77,7 +77,7 @@ namespace SeasonBackend.Miner
 
             var contentWrapper = document.DocumentNode.SelectSingleNode("//div[@id='contentWrapper']");
 
-            var animeName = contentWrapper.SelectSingleNode(".//span[@itemprop='name']").GetDirectInnerText();
+            var animeName = contentWrapper.SelectSingleNode(".//h1[@class='title-name h1_bold_none']/strong").GetDirectInnerText();
 
             var malId = contentWrapper.SelectSingleNode(".//input[@id='myinfo_anime_id']").GetAttributeValue("value", "");
 

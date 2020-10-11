@@ -30,8 +30,8 @@
             Assert.AreEqual("Boku no Hero Academia 4th Season", actualAnime.Mal.Name);
             Assert.AreEqual("38408", actualAnime.Mal.Id);
             Assert.AreEqual(25, actualAnime.Mal.EpisodesCount);
-            Assert.AreEqual(826, actualAnime.Mal.Score);
-            Assert.AreEqual(544810, actualAnime.Mal.MemberCount);
+            Assert.AreEqual(813, actualAnime.Mal.Score);
+            Assert.AreEqual(742500, actualAnime.Mal.MemberCount);
             Assert.AreEqual("https://cdn.myanimelist.net/images/anime/1315/102961.jpg", actualAnime.Mal.ImageUrl);
         }
 
