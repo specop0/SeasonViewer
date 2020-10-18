@@ -14,6 +14,17 @@ namespace SeasonViewer
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            var environmentVariables = this.Configuration.GetSection("EnvironmentVariables").GetChildren();
+            foreach (var environmentVariable in environmentVariables)
+            {
+                var key = environmentVariable.Key;
+                var currentValue = Environment.GetEnvironmentVariable(key);
+                if (string.IsNullOrEmpty(currentValue))
+                {
+                    Environment.SetEnvironmentVariable(key, environmentVariable.Value);
+                }
+            }
         }
 
         public IConfiguration Configuration { get; }

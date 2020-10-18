@@ -1,0 +1,14 @@
+[Unit]
+Description=Season Backend
+
+[Service]
+WorkingDirectory=/home/pi/Sources/SeasonViewer/SeasonBackend
+ExecStart=/usr/bin/dotnet run
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=season-backend
+User=pi
+
+[Install]
+WantedBy=multi-user.target

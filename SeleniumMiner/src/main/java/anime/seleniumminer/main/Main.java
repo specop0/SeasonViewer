@@ -13,7 +13,7 @@ public class Main {
 
         try {
 
-            int port = 22471;
+            int port = 5022;
             String settingsFilename = "settings.json";
             if (args.length > 0) {
                 settingsFilename = args[0];

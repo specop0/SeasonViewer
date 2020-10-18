@@ -1,0 +1,14 @@
+[Unit]
+Description=Season Web
+
+[Service]
+WorkingDirectory=/home/pi/Sources/SeasonViewer/SeasonViewer
+ExecStart=/usr/bin/dotnet run
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=season-web
+User=pi
+
+[Install]
+WantedBy=multi-user.target
