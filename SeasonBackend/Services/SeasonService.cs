@@ -109,14 +109,16 @@ namespace SeasonBackend
                 var response = new SeasonAnimeResponse();
 
                 var season = request.Name;
+                var isPlanToWatch = Season.IsPlanToWatch(season);
 
                 var controller = ServicePool.Instance.GetService<DatabaseAccess>();
                 var miner = ServicePool.Instance.GetService<SeleniumMiner>();
-                // TODO get name via request and save it better in database
+                // TODO get name via request and save it in database
                 var mineResult = miner.MineMalList("specop0");
                 var animes = controller.Do(x =>
                 {
                     var animesDocument = controller.GetAnimeCollection(x);
+                    var knownAnimeIds = new HashSet<long>();
                     var unknownAnimes = new List<Anime>();
                     foreach (var listEntry in mineResult)
                     {
@@ -125,10 +127,11 @@ namespace SeasonBackend
                         {
                             anime.Mal.Status = listEntry.Status;
                             animesDocument.Update(anime);
+                            knownAnimeIds.Add(anime.Id);
                         }
                         else
                         {
-                            unknownAnimes.Add(new Anime
+                            anime = new Anime
                             {
                                 Seasons = new List<string>(),
                                 Mal = new MalInformation
@@ -137,7 +140,37 @@ namespace SeasonBackend
                                     Status = listEntry.Status,
                                     Name = "< UNKNOWN >",
                                 }
-                            });
+                            };
+                            if (!isPlanToWatch)
+                            {
+                                anime.Seasons.Add(season);
+                            }
+                            unknownAnimes.Add(anime);
+                        }
+                    }
+
+                    // animes with state "plan 2 watch" might be removed from the MAL list
+                    if (isPlanToWatch)
+                    {
+                        var planToWatchAnimes = controller.GetSeasonAnimes(
+                                x,
+                                season,
+                                OrderCriteria.OrderByNone,
+                                GroupCriteria.GroupByNone,
+                                FilterCriteria.FilterByPlan2Watch)
+                            .ToList();
+
+                        var missingAnimes = planToWatchAnimes
+                            .Where(x => !knownAnimeIds.Contains(x.Id)) // .Except(knownAnimes)
+                            .ToList();
+                        var animesToDelete = new HashSet<long>();
+                        foreach (var missingAnime in missingAnimes)
+                        {
+                            if (missingAnime.Mal.Status == ListStatus.Plan2Watch)
+                            {
+                                missingAnime.Mal.Status = ListStatus.Unknown;
+                                animesDocument.Update(missingAnime);
+                            }
                         }
                     }
 
