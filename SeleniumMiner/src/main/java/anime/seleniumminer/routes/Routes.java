@@ -5,6 +5,7 @@ import anime.seleniumminer.main.IMineController;
 public class Routes {
 
     public static void EstablishRoutes(int port, IMineController controller) {
+        spark.Spark.ipAddress("localhost");
         spark.Spark.port(port);
         spark.Spark.post("/mine/*", "application/json", new MineRoute(controller));
     }
