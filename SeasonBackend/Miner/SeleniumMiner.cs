@@ -34,7 +34,7 @@ namespace SeasonBackend.Miner
             foreach (var anime in animes)
             {
                 var newAnime = this.MineAnime(anime.Mal.Id);
-                if(newAnime != null)
+                if (newAnime != null)
                 {
                     newAnime.Mal.Status = anime.Mal.Status;
                     foundAnimes.Add(newAnime);
@@ -107,7 +107,7 @@ namespace SeasonBackend.Miner
             var scoreRow = border.ChildNodes.ElementAt(statisticsIndex + 2);
             var scoreTextElement = scoreRow.SelectSingleNode("./span[@itemprop='ratingValue']");
             uint score = 0;
-            if(scoreTextElement != null)
+            if (scoreTextElement != null)
             {
                 var scoreText = scoreTextElement.GetDirectInnerText();
                 if (double.TryParse(scoreText, NumberStyles.Number, NumberFormatInfo.InvariantInfo, out var scoreDouble))
@@ -181,7 +181,7 @@ namespace SeasonBackend.Miner
 
             foreach (var animeNode in animeNodes)
             {
-                var titleElement = animeNode.SelectSingleNode("div/div[@class='title']/h2/a");
+                var titleElement = animeNode.SelectSingleNode("div/div[@class='title']/div/h2/a");
 
                 var title = titleElement.InnerText;
                 var malUrl = titleElement.GetAttributeValue("href", "");
@@ -328,25 +328,6 @@ namespace SeasonBackend.Miner
 
             var hosters = new List<HosterInformation>();
 
-            //hosters.AddRange(this.ParseAmazon(anime));
-            // amazon
-            {
-                var searchResults = this.ParseDuckDuckGo($"site:amazon.de {anime.Mal.Name} prime video");
-                var midfix = "/dp/";
-                var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.Contains(midfix));
-                if (searchResult != null)
-                {
-                    var id = searchResult.Url.Substring(searchResult.Url.IndexOf(midfix) + midfix.Length).Split("/").FirstOrDefault();
-                    hosters.Add(new HosterInformation
-                    {
-                        HosterType = HosterType.Amazon,
-                        Id = id,
-                        Name = searchResult.Name,
-                        Url = searchResult.Url,
-                    });
-                }
-            }
-
             // wakanim.tv
             {
                 var searchResults = this.ParseDuckDuckGo($"site:wakanim.tv {anime.Mal.Name}");
@@ -365,24 +346,6 @@ namespace SeasonBackend.Miner
                 }
             }
 
-            // netflix
-            {
-                var searchResults = this.ParseDuckDuckGo($"site:netflix.com {anime.Mal.Name}");
-                var prefix = "https://www.netflix.com/title/";
-                var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix));
-                if (searchResult != null)
-                {
-                    var id = searchResult.Url.Substring(prefix.Length).Split("/").FirstOrDefault();
-                    hosters.Add(new HosterInformation
-                    {
-                        HosterType = HosterType.Netflix,
-                        Id = id,
-                        Name = searchResult.Name,
-                        Url = searchResult.Url,
-                    });
-                }
-            }
-
             // crunchyroll
             {
                 var searchResults = this.ParseDuckDuckGo($"site:crunchyroll.com {anime.Mal.Name}");
@@ -394,24 +357,6 @@ namespace SeasonBackend.Miner
                     hosters.Add(new HosterInformation
                     {
                         HosterType = HosterType.Crunchyroll,
-                        Id = id,
-                        Name = searchResult.Name,
-                        Url = searchResult.Url,
-                    });
-                }
-            }
-
-            // anime-on-demand
-            {
-                var searchResults = this.ParseDuckDuckGo($"site:anime-on-demand.de {anime.Mal.Name}");
-                var prefix = "https://www.anime-on-demand.de/anime/";
-                var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix));
-                if (searchResult != null)
-                {
-                    var id = searchResult.Url.Substring(prefix.Length).Split("/").FirstOrDefault();
-                    hosters.Add(new HosterInformation
-                    {
-                        HosterType = HosterType.AnimeOnDemand,
                         Id = id,
                         Name = searchResult.Name,
                         Url = searchResult.Url,
@@ -514,78 +459,6 @@ namespace SeasonBackend.Miner
             }
 
             return hosters.ToArray();
-        }
-
-        public HosterInformation[] ParseAmazon(Anime anime)
-        {
-            var request = new AmazonSearchRequest
-            {
-                Url = "https://www.amazon.de/gp/video/storefront?filterId=OFFER_FILTER%3DPRIME",
-                Search = anime.Mal.Name,
-            };
-
-            var response = this.Miner.PostAsync("amazon", request.ToHttpContent()).Result;
-            if (response.IsSuccessStatusCode)
-            {
-                var body = response.Content.ReadAsStringAsync().Result;
-                return ParseAmazonSearch(anime, body);
-            }
-
-            return new HosterInformation[0];
-        }
-
-        public static HosterInformation[] ParseAmazonSearch(Anime anime, string body)
-        {
-            var hosterInformations = new List<HosterInformation>();
-
-            var pageSourceResult = body.Deserialize<AmazonSearchResult>();
-            var pageSource = pageSourceResult.PageSource;
-
-            var document = new HtmlDocument();
-            document.LoadHtml(pageSource);
-
-            var searchResultDiv = document.DocumentNode.SelectSingleNode("//div[@class='s-result-list s-search-results sg-row']");
-            IEnumerable<HtmlNode> searchResults = searchResultDiv.SelectNodes("div") ?? Enumerable.Empty<HtmlNode>();
-
-            foreach (var searchResult in searchResults)
-            {
-                var amazonId = searchResult.GetAttributeValue("data-asin", "");
-                var amazonName = searchResult.SelectSingleNode(".//img")?.GetAttributeValue("alt", "");
-
-                if (string.IsNullOrEmpty(amazonId) || string.IsNullOrEmpty(amazonName))
-                {
-                    continue;
-                }
-
-                var hosterInformation = new HosterInformation
-                {
-                    HosterType = Protos.HosterType.Amazon,
-                    Id = amazonId,
-                    Name = amazonName,
-                    Url = $"https://www.amazon.de/dp/{amazonId}",
-                };
-                hosterInformations.Add(hosterInformation);
-            }
-
-            if (hosterInformations.Count > 1)
-            {
-                var simplifySearchRegex = new Regex("^[A-z,0-9]");
-                var name = simplifySearchRegex.Replace(anime.Mal.Name, "").ToLowerInvariant();
-
-                var matchingHosterInformations = hosterInformations.Where(x =>
-                {
-                    var amazonName = simplifySearchRegex.Replace(x.Name, "").ToLowerInvariant();
-                    return name == amazonName;
-                }).ToList();
-
-                if (matchingHosterInformations.Count == 1)
-                {
-                    return matchingHosterInformations.ToArray();
-                }
-            }
-
-
-            return hosterInformations.ToArray();
         }
 
         public DuckDuckGoSearchItem[] ParseDuckDuckGo(string searchQuery)

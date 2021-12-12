@@ -15,15 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Backend\Miner\amazon-search-expected.json" />
-    <EmbeddedResource Include="Backend\Miner\amazon-search.json" />
-    <EmbeddedResource Include="Backend\Miner\anime.json" />
-    <EmbeddedResource Include="Backend\Miner\duckduckgo-search-expected.json" />
-    <EmbeddedResource Include="Backend\Miner\duckduckgo-search.json" />
-    <EmbeddedResource Include="Backend\Miner\mal-list-expected.json" />
-    <EmbeddedResource Include="Backend\Miner\mal-list.json" />
-    <EmbeddedResource Include="Backend\Miner\mal-season-expected.json" />
-    <EmbeddedResource Include="Backend\Miner\mal-season.json" />
+    <EmbeddedResource Include="Backend\Miner\*.json" />
   </ItemGroup>
 
 </Project>
