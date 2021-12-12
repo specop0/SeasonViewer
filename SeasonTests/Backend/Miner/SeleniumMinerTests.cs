@@ -45,7 +45,7 @@
 
             var expectedAnimes = JsonSerializer.Deserialize<Anime[]>(this.GetResource("mal-season-expected.json"));
             CollectionAssert.IsNotEmpty(expectedAnimes, "unit test implementation");
-            // System.IO.File.WriteAllText(@"mal-season-expected.json", JsonSerializer.Serialize(actualAnimes, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true }));
+            // System.IO.File.WriteAllText(@"mal-season-expected.json", JsonSerializer.Serialize(actualAnimes, new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }));
 
             Assert.AreEqual(expectedAnimes.Length, actualAnimes.Length);
 
@@ -126,7 +126,7 @@
             CollectionAssert.IsNotEmpty(animes);
             System.IO.File.WriteAllText(
                 "expected.json",
-                JsonSerializer.Serialize(animes, new JsonSerializerOptions { WriteIndented = true, IgnoreNullValues = true }));
+                JsonSerializer.Serialize(animes, new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }));
         }
     }
 }

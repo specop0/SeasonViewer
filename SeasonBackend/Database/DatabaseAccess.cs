@@ -129,11 +129,11 @@ namespace SeasonBackend.Database
                 }
             }
 
-            animeCollection.InsertBulk(animesToAdd);
+            animeCollection.Insert(animesToAdd);
             animeCollection.Update(animesToUpdate);
         }
 
-        public LiteCollection<Anime> GetAnimeCollection(LiteDatabase database)
+        public ILiteCollection<Anime> GetAnimeCollection(LiteDatabase database)
         {
             return database.GetCollection<Anime>("animes");
         }
