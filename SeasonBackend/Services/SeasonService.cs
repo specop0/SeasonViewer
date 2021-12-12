@@ -141,10 +141,6 @@ namespace SeasonBackend
                                     Name = "< UNKNOWN >",
                                 }
                             };
-                            if (!isPlanToWatch)
-                            {
-                                anime.Seasons.Add(season);
-                            }
                             unknownAnimes.Add(anime);
                         }
                     }
