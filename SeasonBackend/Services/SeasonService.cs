@@ -257,21 +257,18 @@ namespace SeasonBackend
                 seasonAnime.HosterMinedAt = anime.HosterMinedAt.Value.Ticks;
             }
 
-            if (anime.Hoster != null)
+            var hoster = anime.Hoster.Select(x =>
             {
-                var hoster = anime.Hoster.Select(x =>
-                {
-                    var hoster = new Hoster();
+                var hoster = new Hoster();
 
-                    hoster.Id = x.Id ?? string.Empty;
-                    hoster.Name = x.Name ?? string.Empty;
-                    hoster.HosterType = x.HosterType;
-                    hoster.Url = x.Url ?? string.Empty;
+                hoster.Id = x.Id ?? string.Empty;
+                hoster.Name = x.Name ?? string.Empty;
+                hoster.HosterType = x.HosterType;
+                hoster.Url = x.Url ?? string.Empty;
 
-                    return hoster;
-                });
-                seasonAnime.Hoster.AddRange(hoster);
-            }
+                return hoster;
+            });
+            seasonAnime.Hoster.AddRange(hoster);
 
             return seasonAnime;
         }

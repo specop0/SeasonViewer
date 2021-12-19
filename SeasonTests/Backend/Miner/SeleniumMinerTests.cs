@@ -63,7 +63,7 @@
                 CollectionAssert.AreEqual(new[] { season }, actual.Seasons);
                 Assert.AreEqual(default(int), actual.Id);
 
-                Assert.IsNull(actual.Hoster);
+                CollectionAssert.IsEmpty(actual.Hoster);
 
                 Assert.IsNotNull(expected.Mal.ImageUrl, $"missing image for {expected.Mal.Name}");
             }

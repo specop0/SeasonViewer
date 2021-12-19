@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SeasonBackend.Database
 {
@@ -8,11 +7,11 @@ namespace SeasonBackend.Database
     {
         public long Id { get; set; }
 
-        public List<string> Seasons { get; set; }
+        public List<string> Seasons { get; set; } = new List<string>();
 
         public MalInformation Mal { get; set; }
 
-        public List<HosterInformation> Hoster { get; set; }
+        public List<HosterInformation> Hoster { get; set; } = new List<HosterInformation>();
 
         public DateTime? HosterMinedAt { get; set; }
     }

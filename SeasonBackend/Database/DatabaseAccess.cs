@@ -38,13 +38,13 @@ namespace SeasonBackend.Database
         public IEnumerable<Anime> GetSeasonAnimes(LiteDatabase database, string season, OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
         {
             IEnumerable<Anime> animes;
-            if(Season.IsPlanToWatch(season))
+            if (Season.IsPlanToWatch(season))
             {
-                animes = database.GetCollection<Anime>("animes").Find(x => x.Mal.Status == ListStatus.Plan2Watch);
+                animes = this.GetAnimeCollection(database).Find(x => x.Mal.Status == ListStatus.Plan2Watch);
             }
             else
             {
-                animes = database.GetCollection<Anime>("animes").Find(x => x.Seasons.Contains(season) == true);
+                animes = this.GetAnimeCollection(database).Find(x => x.Seasons.Contains(season));
             }
 
             // filter
@@ -75,17 +75,16 @@ namespace SeasonBackend.Database
                 case GroupCriteria.GroupByHoster:
                     var hosterOrder = new[] { HosterType.Amazon, HosterType.Crunchyroll, HosterType.Netflix, HosterType.AnimeOnDemand, HosterType.Wakanim, HosterType.Unknown };
                     animes = animes
-                        .Where(x => x.Hoster != null)
                         .SelectMany(x =>
-                    {
-                        var hosterTypes = x.Hoster.Select(x => x.HosterType).Distinct().ToList();
-                        if (!hosterTypes.Any())
                         {
-                            hosterTypes.Add(HosterType.Unknown);
-                        }
+                            var hosterTypes = x.Hoster.Select(x => x.HosterType).Distinct().ToList();
+                            if (!hosterTypes.Any())
+                            {
+                                hosterTypes.Add(HosterType.Unknown);
+                            }
 
-                        return hosterTypes.Select(y => Tuple.Create(x, y));
-                    })
+                            return hosterTypes.Select(y => Tuple.Create(x, y));
+                        })
                         .GroupBy(x => x.Item2)
                         .OrderBy(x => Array.IndexOf(hosterOrder, x.Key))
                         .SelectMany(x => x.Select(y => y.Item1));
@@ -120,7 +119,8 @@ namespace SeasonBackend.Database
                 if (matchingAnime != null)
                 {
                     matchingAnime.Mal = anime.Mal;
-                    matchingAnime.Seasons.AddRange(anime.Seasons);
+                    var newSeasons = anime.Seasons.Except(matchingAnime.Seasons);
+                    matchingAnime.Seasons.AddRange(newSeasons);
                     animesToUpdate.Add(matchingAnime);
                 }
                 else
@@ -140,7 +140,7 @@ namespace SeasonBackend.Database
 
         public void UpdateSeasonAnimes(LiteDatabase database, Anime[] animes)
         {
-            var animeDocuments = database.GetCollection<Anime>("animes");
+            var animeDocuments = this.GetAnimeCollection(database);
             foreach (var anime in animes)
             {
                 var matchingAnime = animeDocuments.FindOne(x => x.Mal.Id == anime.Mal.Id);
