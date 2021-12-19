@@ -33,7 +33,7 @@ namespace SeasonBackend
                       return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria).ToArray();
                   });
 
-                if (!animes.Any())
+                if (!animes.Any() && request.FilterCriteria == FilterCriteria.FilterByNone)
                 {
                     var miner = ServicePool.Instance.GetService<SeleniumMiner>();
                     var mineResult = miner.MineSeasonAnime(season);
