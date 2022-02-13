@@ -3,7 +3,7 @@ Description=Season Web
 
 [Service]
 WorkingDirectory=/home/pi/Sources/SeasonViewer/SeasonViewer
-ExecStart=/usr/bin/dotnet run
+ExecStart=/usr/bin/dotnet bin/publish/SeasonViewer.dll
 Restart=always
 RestartSec=10
 KillSignal=SIGINT
