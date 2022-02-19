@@ -1,20 +1,7 @@
 # Build files
 bin/
 obj/
-*.dll
-*.exe
 target/
-
-.settings
-.classpath
-.project
-
-# VS files
-.vs/
-*.user
-
-# NuGet
-packages/
 
 # WebDriver
 geckodriver
