@@ -181,7 +181,7 @@ namespace SeasonBackend.Miner
 
             foreach (var animeNode in animeNodes)
             {
-                var titleElement = animeNode.SelectSingleNode("div/div[@class='title']/div/h2/a");
+                var titleElement = animeNode.SelectSingleNode(".//a[contains(@class, 'link-title')]");
 
                 var title = titleElement.InnerText;
                 var malUrl = titleElement.GetAttributeValue("href", "");
@@ -195,15 +195,15 @@ namespace SeasonBackend.Miner
                     return -1;
                 }).FirstOrDefault(x => x > 0);
 
-                var imageElement = animeNode.SelectSingleNode("div[@class='image']/a/img");
+                var imageElement = animeNode.SelectSingleNode(".//img");
                 var imageUrl = imageElement.GetAttributeValue("src", "");
                 if (string.IsNullOrEmpty(imageUrl))
                 {
                     imageUrl = imageElement.GetAttributeValue("data-src", "");
                 }
 
-                var scoreAndMemberDiv = animeNode.SelectSingleNode("div/div[contains(@class, 'information')]/div[contains(@class, 'scormem')]");
-                var memberDiv = scoreAndMemberDiv.SelectSingleNode(".//div[@title='Members']");
+                var scoreAndMemberDiv = animeNode.SelectSingleNode(".//div[contains(@class, 'scormem')]");
+                var memberDiv = scoreAndMemberDiv.SelectSingleNode(".//div[contains(@title, 'Members')]");
                 ulong memberCount = 0L;
                 var membersText = memberDiv.GetDirectInnerText();
                 ulong membersCountScale = 1L;
@@ -217,7 +217,7 @@ namespace SeasonBackend.Miner
                     memberCount = (ulong)memberCountDouble;
                     memberCount *= membersCountScale;
                 }
-                var scoreDiv = scoreAndMemberDiv.SelectSingleNode(".//div[@title='Score']");
+                var scoreDiv = scoreAndMemberDiv.SelectSingleNode(".//div[contains(@title, 'Score')]");
                 uint score = 0;
                 if (double.TryParse(scoreDiv.InnerText, NumberStyles.Number, NumberFormatInfo.InvariantInfo, out var scoreDouble))
                 {
@@ -225,7 +225,7 @@ namespace SeasonBackend.Miner
                 }
 
                 ulong episodesCount = 0L;
-                var episodesCountSpan = animeNode.SelectSingleNode("div/div[@class='prodsrc']/div[@class='info']/span[2]/span[1]");
+                var episodesCountSpan = animeNode.SelectSingleNode(".//div[contains(@class, 'prodsrc')]/div[@class='info']/span[2]/span[1]");
                 if (!string.IsNullOrEmpty(episodesCountSpan.InnerText))
                 {
                     var number = episodesCountSpan.InnerText.Split(" ").FirstOrDefault();
