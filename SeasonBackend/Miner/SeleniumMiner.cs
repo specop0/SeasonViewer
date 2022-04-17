@@ -453,16 +453,6 @@ namespace SeasonBackend.Miner
                     }
                 }
 
-                // anime-on-demand
-                {
-                    var prefix = "https://www.anime-on-demand.de/anime/";
-                    if (url.StartsWith(prefix))
-                    {
-                        hoster.HosterType = HosterType.AnimeOnDemand;
-                        hoster.Id = url.Substring(prefix.Length).Split("/").FirstOrDefault();
-                    }
-                }
-
                 hosters.Add(hoster);
             }
 
