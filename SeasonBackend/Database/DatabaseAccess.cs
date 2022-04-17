@@ -138,7 +138,7 @@ namespace SeasonBackend.Database
             return database.GetCollection<Anime>("animes");
         }
 
-        public void UpdateSeasonAnimes(LiteDatabase database, Anime[] animes)
+        public void UpdateSeasonAnimes(LiteDatabase database, string season, Anime[] animes)
         {
             var animeDocuments = this.GetAnimeCollection(database);
             foreach (var anime in animes)
@@ -152,6 +152,13 @@ namespace SeasonBackend.Database
                     matchingAnime.Mal.MemberCount = anime.Mal.MemberCount;
                     matchingAnime.Mal.Name = anime.Mal.Name;
                     matchingAnime.Mal.Score = anime.Mal.Score;
+
+                    // add season
+                    if (!matchingAnime.Seasons.Contains(season))
+                    {
+                        matchingAnime.Seasons.Add(season);
+                    }
+
                     animeDocuments.Update(matchingAnime);
                 }
                 else

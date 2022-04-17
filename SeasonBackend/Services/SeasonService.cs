@@ -91,7 +91,7 @@ namespace SeasonBackend
                     var mineResult = miner.MineSeasonAnime(season);
                     animes = controller.Do(x =>
                     {
-                        controller.UpdateSeasonAnimes(x, mineResult.Animes);
+                        controller.UpdateSeasonAnimes(x, season, mineResult.Animes);
                         return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
                     });
                 }
