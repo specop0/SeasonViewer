@@ -1797,22 +1797,6 @@
       "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
     ],
     "Mal": {
-      "Id": "49223",
-      "Name": "Ouji no Honmei wa Akuyaku Reijou",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1432/119495.webp",
-      "MemberCount": 4000,
-      "Score": 584,
-      "EpisodesCount": 8,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
       "Id": "50673",
       "Name": "Pokemon (2019): Kami to Yobareshi Arceus",
       "ImageUrl": "https://cdn.myanimelist.net/images/anime/1703/120249.webp",
@@ -1914,22 +1898,6 @@
       "ImageUrl": "https://cdn.myanimelist.net/images/anime/1034/119535.webp",
       "MemberCount": 1000,
       "Score": 617,
-      "EpisodesCount": 0,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
-      "Id": "50208",
-      "Name": "3-byougo, Yajuu.: Goukon de Sumi ni Ita Kare wa Midara Nikushoku deshita",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1972/121006.webp",
-      "MemberCount": 1000,
-      "Score": 0,
       "EpisodesCount": 0,
       "Status": 0
     },
@@ -2725,54 +2693,6 @@
       "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
     ],
     "Mal": {
-      "Id": "50237",
-      "Name": "Kyonyuu Elf Oyako Saimin",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1159/119017.webp",
-      "MemberCount": 3000,
-      "Score": 703,
-      "EpisodesCount": 2,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
-      "Id": "50192",
-      "Name": "Akane wa Tsumare Somerareru",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1561/118943.webp",
-      "MemberCount": 3000,
-      "Score": 645,
-      "EpisodesCount": 2,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
-      "Id": "50634",
-      "Name": "Kaede to Suzu The Animation",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1881/120300.webp",
-      "MemberCount": 3000,
-      "Score": 773,
-      "EpisodesCount": 0,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
       "Id": "49518",
       "Name": "Otome wa Boku ni Koishiteru: Trinkle Stars The Animation",
       "ImageUrl": "https://cdn.myanimelist.net/images/anime/1902/117488.webp",
@@ -2795,134 +2715,6 @@
       "MemberCount": 3000,
       "Score": 693,
       "EpisodesCount": 1,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
-      "Id": "50488",
-      "Name": "Garden: Takamine-ke no Nirinka - The Animation",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1593/119817.webp",
-      "MemberCount": 3000,
-      "Score": 769,
-      "EpisodesCount": 0,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
-      "Id": "50156",
-      "Name": "Himitsu no Kichi",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1393/118853.webp",
-      "MemberCount": 2000,
-      "Score": 630,
-      "EpisodesCount": 2,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
-      "Id": "50487",
-      "Name": "Kimi wa Yasashiku Netorareru The Animation",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1936/119816.webp",
-      "MemberCount": 1000,
-      "Score": 615,
-      "EpisodesCount": 0,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
-      "Id": "50434",
-      "Name": "Ero Ishi: Seijun Bishoujo wo Kotoba Takumi ni Hametai Houdai",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1075/119597.webp",
-      "MemberCount": 1000,
-      "Score": 623,
-      "EpisodesCount": 0,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
-      "Id": "50051",
-      "Name": "Abandon: 100 Nuki Shinai to Derarenai Fushigi na Kyoushitsu",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1701/118631.webp",
-      "MemberCount": 1000,
-      "Score": 611,
-      "EpisodesCount": 0,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
-      "Id": "50654",
-      "Name": "Yamitsuki Mura: Melty Limit The Animation",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1489/120299.webp",
-      "MemberCount": 1000,
-      "Score": 630,
-      "EpisodesCount": 2,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
-      "Id": "50435",
-      "Name": "Sei Dorei Gakuen 2",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1746/119598.webp",
-      "MemberCount": 1000,
-      "Score": 608,
-      "EpisodesCount": 2,
-      "Status": 0
-    },
-    "Hoster": []
-  },
-  {
-    "Id": 0,
-    "Seasons": [
-      "986ec5d9-8053-4b00-9fc5-1362ecd8f672"
-    ],
-    "Mal": {
-      "Id": "51088",
-      "Name": "Eroriman",
-      "ImageUrl": "https://cdn.myanimelist.net/images/anime/1991/121069.webp",
-      "MemberCount": 1000,
-      "Score": 635,
-      "EpisodesCount": 0,
       "Status": 0
     },
     "Hoster": []

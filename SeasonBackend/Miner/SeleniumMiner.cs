@@ -235,6 +235,12 @@ namespace SeasonBackend.Miner
                     }
                 }
 
+                var hentaiGenre = animeNode.SelectSingleNode(".//span[contains(@class, 'genre')]/a[@title='Hentai']");
+                if (hentaiGenre != null)
+                {
+                    continue;
+                }
+
                 var anime = new Anime
                 {
                     Seasons = new List<string> { season },
