@@ -7,6 +7,7 @@ public class Plugins {
             new PageSourcePlugin(),
             new AmazonPlugin(),
             new DuckDuckGoPlugin(),
+            new ScreenshotPlugin(),
         };
     }
 }
