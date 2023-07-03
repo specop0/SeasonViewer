@@ -1,24 +1,15 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
-using Microsoft.Extensions.Logging;
 using SeasonBackend.Database;
 using SeasonBackend.Miner;
 using SeasonBackend.Protos;
-using SeasonBackend.Services;
 
-namespace SeasonBackend
+namespace SeasonBackend.Services
 {
     public class SeasonService : SeasonProvider.SeasonProviderBase
     {
-        private readonly ILogger<SeasonService> _logger;
-        public SeasonService(ILogger<SeasonService> logger)
-        {
-            _logger = logger;
-        }
-
         public override Task<SeasonAnimeResponse> GetSeason(SeasonAnimeRequest request, ServerCallContext context)
         {
             return Task.Run(() =>
@@ -261,7 +252,6 @@ namespace SeasonBackend
             {
                 var hoster = new Hoster();
 
-                hoster.Id = x.Id ?? string.Empty;
                 hoster.Name = x.Name ?? string.Empty;
                 hoster.HosterType = x.HosterType;
                 hoster.Url = x.Url ?? string.Empty;

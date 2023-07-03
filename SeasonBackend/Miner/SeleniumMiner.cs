@@ -1,12 +1,11 @@
-﻿using HtmlAgilityPack;
-using SeasonBackend.Database;
-using SeasonBackend.Protos;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
+using HtmlAgilityPack;
+using SeasonBackend.Database;
+using SeasonBackend.Protos;
 
 namespace SeasonBackend.Miner
 {
@@ -349,11 +348,8 @@ namespace SeasonBackend.Miner
                 var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix));
                 if (searchResult != null)
                 {
-                    var id = searchResult.Url.Substring(prefix.Length).Split("/").FirstOrDefault();
                     hosters.Add(new HosterInformation
                     {
-                        HosterType = HosterType.Wakanim,
-                        Id = id,
                         Name = searchResult.Name,
                         Url = searchResult.Url,
                     });
@@ -367,11 +363,8 @@ namespace SeasonBackend.Miner
                 var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix) && x.Url.Substring(prefix.Length).Split("/").Length == 1);
                 if (searchResult != null)
                 {
-                    var id = searchResult.Url.Substring(prefix.Length).Split("/").FirstOrDefault();
                     hosters.Add(new HosterInformation
                     {
-                        HosterType = HosterType.Crunchyroll,
-                        Id = id,
                         Name = searchResult.Name,
                         Url = searchResult.Url,
                     });
@@ -398,65 +391,11 @@ namespace SeasonBackend.Miner
                 {
                     Url = url,
                     Name = anime.Mal.Name,
-                    HosterType = hosterInput.HosterType,
-                    Id = Guid.NewGuid().ToString()
                 };
+
                 if (!string.IsNullOrEmpty(hosterInput.Name))
                 {
                     hoster.Name = hosterInput.Name;
-                }
-                if (!string.IsNullOrEmpty(hosterInput.Id))
-                {
-                    hoster.Id = hosterInput.Id;
-                }
-
-                // amazon
-                {
-                    var prefix = "https://www.amazon.de/";
-                    if (url.StartsWith(prefix))
-                    {
-                        hoster.HosterType = HosterType.Amazon;
-
-                        var midfix = "/dp/";
-                        if (url.Contains(midfix))
-                        {
-                            var id = url.Substring(url.IndexOf(midfix) + midfix.Length).Split("/").FirstOrDefault();
-                            if (!string.IsNullOrEmpty(id))
-                            {
-                                hoster.Id = id;
-                            }
-                        }
-                    }
-                }
-
-                // wakanim.tv
-                {
-                    var prefix = "https://www.wakanim.tv/de/v2/catalogue/show/";
-                    if (url.StartsWith(prefix))
-                    {
-                        hoster.HosterType = HosterType.Wakanim;
-                        hoster.Id = url.Substring(prefix.Length).Split("/").FirstOrDefault();
-                    }
-                }
-
-                // netflix
-                {
-                    var prefix = "https://www.netflix.com/de/title/";
-                    if (url.StartsWith(prefix))
-                    {
-                        hoster.HosterType = HosterType.Netflix;
-                        hoster.Id = url.Substring(prefix.Length).Split("/").FirstOrDefault();
-                    }
-                }
-
-                // crunchyroll
-                {
-                    var prefix = "https://www.crunchyroll.com/de/";
-                    if (url.StartsWith(prefix))
-                    {
-                        hoster.HosterType = HosterType.Crunchyroll;
-                        hoster.Id = url.Substring(prefix.Length).Split("/").FirstOrDefault();
-                    }
                 }
 
                 hosters.Add(hoster);

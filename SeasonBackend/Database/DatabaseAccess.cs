@@ -1,8 +1,8 @@
-﻿using LiteDB;
-using SeasonBackend.Protos;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LiteDB;
+using SeasonBackend.Protos;
 
 namespace SeasonBackend.Database
 {
@@ -73,20 +73,30 @@ namespace SeasonBackend.Database
             switch (groupBy)
             {
                 case GroupCriteria.GroupByHoster:
-                    var hosterOrder = new[] { HosterType.Amazon, HosterType.Crunchyroll, HosterType.Netflix, HosterType.AnimeOnDemand, HosterType.Wakanim, HosterType.Unknown };
                     animes = animes
                         .SelectMany(x =>
                         {
                             var hosterTypes = x.Hoster.Select(x => x.HosterType).Distinct().ToList();
                             if (!hosterTypes.Any())
                             {
-                                hosterTypes.Add(HosterType.Unknown);
+                                hosterTypes.Add(string.Empty);
                             }
 
                             return hosterTypes.Select(y => Tuple.Create(x, y));
                         })
                         .GroupBy(x => x.Item2)
-                        .OrderBy(x => Array.IndexOf(hosterOrder, x.Key))
+                        .OrderBy(x => x.Key, Comparer<string>.Create((x, y) =>
+                        {
+                            if (string.IsNullOrEmpty(x) && string.IsNullOrEmpty(y)) return 0;
+
+                            // null or empty should be last (i.e., highest)
+                            // x is null? then y < x
+                            if (string.IsNullOrEmpty(x)) return 1;
+                            // y is null? then x < y
+                            if (string.IsNullOrEmpty(y)) return -1;
+
+                            return x.CompareTo(y);
+                        }))
                         .SelectMany(x => x.Select(y => y.Item1));
                     break;
             }

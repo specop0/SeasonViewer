@@ -1,9 +1,8 @@
-﻿using SeasonBackend.Database;
-using SeasonBackend.Miner;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using SeasonBackend.Database;
+using SeasonBackend.Miner;
 
 namespace SeasonBackend.Services
 {
@@ -11,9 +10,12 @@ namespace SeasonBackend.Services
     {
         private ServicePool()
         {
-            this.Services = new Dictionary<Type, object>();
-            this.Services.Add(typeof(DatabaseAccess), new DatabaseAccess("MyData.db"));
-            this.Services.Add(typeof(SeleniumMiner), new SeleniumMiner());
+            this.Services = new Dictionary<Type, object>
+            {
+                { typeof(DatabaseAccess), new DatabaseAccess("MyData.db") },
+                { typeof(SeleniumMiner), new SeleniumMiner() },
+                { typeof(HosterService), new HosterService() },
+            };
         }
 
         private static ServicePool instance;

@@ -1,8 +1,8 @@
-using Grpc.Net.Client;
-using SeasonBackend.Protos;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Grpc.Net.Client;
+using SeasonBackend.Protos;
 using static SeasonBackend.Protos.SeasonProvider;
 
 namespace SeasonViewer.Data

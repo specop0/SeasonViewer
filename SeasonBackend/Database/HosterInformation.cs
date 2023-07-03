@@ -1,18 +1,24 @@
-﻿using SeasonBackend.Protos;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SeasonBackend.Services;
 
 namespace SeasonBackend.Database
 {
     public class HosterInformation
     {
-        public string Id { get; set; }
-
         public string Name { get; set; }
 
         public string Url { get; set; }
 
-        public HosterType HosterType { get; set; }
+        public string HosterType
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.Url))
+                {
+                    return string.Empty;
+                }
+
+                return ServicePool.Instance.GetService<HosterService>().GetHosterTypeFromUrl(this.Url);
+            }
+        }
     }
 }
