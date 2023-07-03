@@ -6,6 +6,6 @@ namespace SeasonBackend.Miner
     {
         public string PageSource { get; set; }
 
-        public HosterInformation[] Hosters { get; set; } = new HosterInformation[0];
+        public HosterInformation[] Hosters { get; set; } = System.Array.Empty<HosterInformation>();
     }
 }

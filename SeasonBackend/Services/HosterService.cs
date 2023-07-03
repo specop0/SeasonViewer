@@ -4,12 +4,12 @@ namespace SeasonBackend.Services;
 
 public class HosterService
 {
-    private HosterMappingOption[] mappings = new HosterMappingOption[0];
-
-    public void Initialize(IConfiguration configuration)
+    public HosterService(IConfiguration configuration)
     {
         this.mappings = configuration.GetSection("HosterMapping").Get<HosterMappingOption[]>();
     }
+
+    private readonly HosterMappingOption[] mappings;
 
     public string GetHosterTypeFromUrl(string url)
     {

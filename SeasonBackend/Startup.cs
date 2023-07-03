@@ -1,35 +1,20 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SeasonBackend.Services;
 
 namespace SeasonBackend
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            var environmentVariables = configuration.GetSection("EnvironmentVariables").GetChildren();
-            foreach (var environmentVariable in environmentVariables)
-            {
-                var key = environmentVariable.Key;
-                var currentValue = Environment.GetEnvironmentVariable(key);
-                if (string.IsNullOrEmpty(currentValue))
-                {
-                    Environment.SetEnvironmentVariable(key, environmentVariable.Value);
-                }
-            }
-
-            ServicePool.Instance.GetService<HosterService>().Initialize(configuration);
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
+            services.AddSingleton(x => new Database.DatabaseAccess("MyData.db", x.GetRequiredService<Services.HosterService>()));
+            services.AddSingleton(x => new Services.HosterService(x.GetRequiredService<IConfiguration>()));
+            services.AddSingleton(x => new Miner.SeleniumMiner(x.GetRequiredService<IConfiguration>()));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -43,7 +28,7 @@ namespace SeasonBackend
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<SeasonService>();
+                endpoints.MapGrpcService<Services.SeasonService>();
 
                 endpoints.MapGet("/", async context =>
                 {

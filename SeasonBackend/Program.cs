@@ -7,10 +7,7 @@ namespace SeasonBackend
     {
         public static void Main(string[] args)
         {
-            using (Services.ServicePool.Instance)
-            {
-                CreateHostBuilder(args).Build().Run();
-            }
+            CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

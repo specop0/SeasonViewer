@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Configuration;
 using SeasonBackend.Database;
 using SeasonBackend.Protos;
 
@@ -11,17 +12,23 @@ namespace SeasonBackend.Miner
 {
     public class SeleniumMiner
     {
+        public SeleniumMiner(IConfiguration configuration)
+        {
+            this.url = configuration.GetValue<string>("SeleniumMinerUrl");
+        }
+
+        private readonly string url;
+
         private HttpClient miner;
         protected HttpClient Miner
         {
             get
             {
-                if (this.miner == null)
+                this.miner ??= new HttpClient
                 {
-                    this.miner = new HttpClient();
-                    this.miner.BaseAddress = new Uri(Environment.GetEnvironmentVariable("seleniumMinerUrl"));
-                    this.miner.Timeout = TimeSpan.FromMinutes(15d);
-                }
+                    BaseAddress = new Uri(this.url),
+                    Timeout = TimeSpan.FromMinutes(15d)
+                };
                 return this.miner;
             }
         }
@@ -206,7 +213,7 @@ namespace SeasonBackend.Miner
                 ulong memberCount = 0L;
                 var membersText = memberDiv.GetDirectInnerText();
                 ulong membersCountScale = 1L;
-                if (membersText.Contains("K"))
+                if (membersText.Contains('K'))
                 {
                     membersText = membersText.Replace("K", "");
                     membersCountScale = 1000L;
@@ -261,7 +268,7 @@ namespace SeasonBackend.Miner
 
         public MalListMineResult[] MineMalList(string user)
         {
-            var result = new MalListMineResult[0];
+            var result = Array.Empty<MalListMineResult>();
 
             var seasonUrl = new Uri("https://myanimelist.net/animelist/" + user);
             var pageSourceRequest = new MinePageSourceRequest
@@ -319,7 +326,7 @@ namespace SeasonBackend.Miner
                 if (animeTitle != null)
                 {
                     var animeLink = animeTitle.GetAttributeValue("href", "");
-                    var animeId = animeLink.Substring("/anime/".Length).Split("/").FirstOrDefault();
+                    var animeId = animeLink["/anime/".Length..].Split("/").FirstOrDefault();
 
                     if (!string.IsNullOrEmpty(animeId))
                     {
@@ -360,7 +367,7 @@ namespace SeasonBackend.Miner
             {
                 var searchResults = this.ParseDuckDuckGo($"site:crunchyroll.com {anime.Mal.Name}");
                 var prefix = "https://www.crunchyroll.com/";
-                var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix) && x.Url.Substring(prefix.Length).Split("/").Length == 1);
+                var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix) && x.Url[prefix.Length..].Split("/").Length == 1);
                 if (searchResult != null)
                 {
                     hosters.Add(new HosterInformation
@@ -418,7 +425,7 @@ namespace SeasonBackend.Miner
                 return ParseDuckDuckGoSearch(body);
             }
 
-            return new DuckDuckGoSearchItem[0];
+            return Array.Empty<DuckDuckGoSearchItem>();
         }
 
         public static DuckDuckGoSearchItem[] ParseDuckDuckGoSearch(string body)

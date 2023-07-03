@@ -6,6 +6,6 @@ namespace SeasonBackend.Miner
     {
         public string PageSource { get; set; }
 
-        public Anime[] Animes { get; set; } = new Anime[0];
+        public Anime[] Animes { get; set; } = System.Array.Empty<Anime>();
     }
 }

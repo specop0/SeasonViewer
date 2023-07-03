@@ -2,6 +2,9 @@ package anime.seleniumminer.plugin.webdriver;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -92,8 +95,10 @@ public class FirefoxDriverEx extends FirefoxDriver implements IWebDriver {
             ((JavascriptExecutor) this).executeScript("window.stop()");
         } catch (TimeoutException ex) {
             String message = "Timeout at webDriver stop: " + ex.getMessage();
+            Logger.getLogger(FirefoxDriverEx.class.getName()).log(Level.SEVERE, message, ex);
         } catch (WebDriverException ex) {
             String message = "WebDriver exception: " + ex.getMessage();
+            Logger.getLogger(FirefoxDriverEx.class.getName()).log(Level.SEVERE, message, ex);
         }
     }
 
@@ -145,6 +150,7 @@ public class FirefoxDriverEx extends FirefoxDriver implements IWebDriver {
                     elementToClick.toString(),
                     elementToClick.getAttribute("tag"),
                     elementToClick.getAttribute("class"));
+            Logger.getLogger(FirefoxDriverEx.class.getName()).log(Level.SEVERE, message, ex);
             return false;
         }
 

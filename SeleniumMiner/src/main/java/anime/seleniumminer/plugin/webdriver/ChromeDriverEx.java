@@ -44,12 +44,13 @@ public class ChromeDriverEx extends ChromeDriver implements IWebDriver {
 
         chromeOptions.addArguments("start-maximized"); // https://stackoverflow.com/a/26283818/1689770
         chromeOptions.addArguments("enable-automation"); // https://stackoverflow.com/a/43840128/1689770
-        //chromeOptions.addArguments("--headless"); // only if you are ACTUALLY running headless
-        chromeOptions.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
-        chromeOptions.addArguments("--disable-infobars"); //https://stackoverflow.com/a/43840128/1689770
-        chromeOptions.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/50725918/1689770
-        chromeOptions.addArguments("--disable-browser-side-navigation"); //https://stackoverflow.com/a/49123152/1689770
-        chromeOptions.addArguments("--disable-gpu"); //https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
+        // chromeOptions.addArguments("--headless"); // only if you are ACTUALLY running
+        // headless
+        chromeOptions.addArguments("--no-sandbox"); // https://stackoverflow.com/a/50725918/1689770
+        chromeOptions.addArguments("--disable-infobars"); // https://stackoverflow.com/a/43840128/1689770
+        chromeOptions.addArguments("--disable-dev-shm-usage"); // https://stackoverflow.com/a/50725918/1689770
+        chromeOptions.addArguments("--disable-browser-side-navigation"); // https://stackoverflow.com/a/49123152/1689770
+        chromeOptions.addArguments("--disable-gpu"); // https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
 
         chromeOptions.addArguments("--dns-prefetch-disable");
 
@@ -57,28 +58,29 @@ public class ChromeDriverEx extends ChromeDriver implements IWebDriver {
 
         chromeOptions.addArguments("--disable-bundled-ppapi-flash");
         /*
-        * 1. Locate extensions folder under
-        * C:\Users\SpecOp0\AppData\Local\Google\Chrome\User Data\Default\Extensions
-        * Ghostery: mlomiejdfkolichcflejclcbmpeaniij
-        * uBlock Origin: cjpalhdlnbpafiamejdnhcphjbkeiagm
-        * 2. chrome://extensions/
-        * 3. Activate Developer Mode (top right)
-        * 4. Pack Extension from path 
+         * 1. Locate extensions folder under
+         * C:\Users\SpecOp0\AppData\Local\Google\Chrome\User Data\Default\Extensions
+         * Ghostery: mlomiejdfkolichcflejclcbmpeaniij
+         * uBlock Origin: cjpalhdlnbpafiamejdnhcphjbkeiagm
+         * 2. chrome://extensions/
+         * 3. Activate Developer Mode (top right)
+         * 4. Pack Extension from path
          */
         String[] extensions = {
-            "uBlock-Origin_v1.15.24.crx", //"Ghostery_v8.1.0.crx"
+                "uBlock-Origin_v1.15.24.crx", // "Ghostery_v8.1.0.crx"
         };
         for (String extensionFilename : extensions) {
             File extensionFile = new File(extensionFilename);
             chromeOptions.addExtensions(extensionFile);
         }
         File chromeDriver = new File("chromedriver.exe");
-        ChromeDriverService chromeService = new ChromeDriverService.Builder().usingDriverExecutable(chromeDriver).usingAnyFreePort().build();
+        ChromeDriverService chromeService = new ChromeDriverService.Builder().usingDriverExecutable(chromeDriver)
+                .usingAnyFreePort().build();
         webDriver = new ChromeDriverEx(chromeService, chromeOptions);
         return webDriver;
     }
 
-// <editor-fold desc="Load page handling">
+    // <editor-fold desc="Load page handling">
     @Override
     public void loadPage(String url) {
         try {
@@ -93,7 +95,7 @@ public class ChromeDriverEx extends ChromeDriver implements IWebDriver {
                 Thread.sleep(5000);
 
             } catch (InterruptedException ex) {
-                Logger.getLogger(ChromeDriver.class
+                Logger.getLogger(ChromeDriverEx.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
         } catch (TimeoutException ex) {
@@ -119,8 +121,10 @@ public class ChromeDriverEx extends ChromeDriver implements IWebDriver {
             ((JavascriptExecutor) this).executeScript("window.stop()");
         } catch (TimeoutException ex) {
             String message = "Timeout at webDriver stop: " + ex.getMessage();
+            Logger.getLogger(ChromeDriverEx.class.getName()).log(Level.SEVERE, message, ex);
         } catch (WebDriverException ex) {
             String message = "WebDriver exception: " + ex.getMessage();
+            Logger.getLogger(ChromeDriverEx.class.getName()).log(Level.SEVERE, message, ex);
         }
     }
 
@@ -174,6 +178,7 @@ public class ChromeDriverEx extends ChromeDriver implements IWebDriver {
                     elementToClick.toString(),
                     elementToClick.getAttribute("tag"),
                     elementToClick.getAttribute("class"));
+            Logger.getLogger(ChromeDriverEx.class.getName()).log(Level.SEVERE, message, ex);
             return false;
         }
 

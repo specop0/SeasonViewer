@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,24 +10,6 @@ namespace SeasonViewer
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-
-            var environmentVariables = this.Configuration.GetSection("EnvironmentVariables").GetChildren();
-            foreach (var environmentVariable in environmentVariables)
-            {
-                var key = environmentVariable.Key;
-                var currentValue = Environment.GetEnvironmentVariable(key);
-                if (string.IsNullOrEmpty(currentValue))
-                {
-                    Environment.SetEnvironmentVariable(key, environmentVariable.Value);
-                }
-            }
-        }
-
-        public IConfiguration Configuration { get; }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
@@ -38,7 +19,9 @@ namespace SeasonViewer
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var pathBase = Environment.GetEnvironmentVariable("pathBase");
+            var configuration = app.ApplicationServices.GetRequiredService<IConfiguration>();
+
+            var pathBase = configuration.GetValue<string>("PathBase");
             if (!string.IsNullOrEmpty(pathBase))
             {
                 app.UsePathBase(new PathString(pathBase));

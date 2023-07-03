@@ -10,6 +10,17 @@ namespace SeasonBackend.Services
 {
     public class SeasonService : SeasonProvider.SeasonProviderBase
     {
+        public SeasonService(DatabaseAccess databaseAccess, SeleniumMiner miner, HosterService hosterService)
+        {
+            this.Controller = databaseAccess;
+            this.Miner = miner;
+            this.HosterService = hosterService;
+        }
+
+        protected DatabaseAccess Controller { get; }
+        protected SeleniumMiner Miner { get; }
+        protected HosterService HosterService { get; }
+
         public override Task<SeasonAnimeResponse> GetSeason(SeasonAnimeRequest request, ServerCallContext context)
         {
             return Task.Run(() =>
@@ -18,7 +29,7 @@ namespace SeasonBackend.Services
 
                 var season = request.Name;
 
-                var controller = ServicePool.Instance.GetService<DatabaseAccess>();
+                var controller = this.Controller;
                 var animes = controller.Do(x =>
                   {
                       return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria).ToArray();
@@ -26,7 +37,7 @@ namespace SeasonBackend.Services
 
                 if (!animes.Any() && request.FilterCriteria == FilterCriteria.FilterByNone)
                 {
-                    var miner = ServicePool.Instance.GetService<SeleniumMiner>();
+                    var miner = this.Miner;
                     var mineResult = miner.MineSeasonAnime(season);
                     if (mineResult.Animes.Any())
                     {
@@ -52,8 +63,8 @@ namespace SeasonBackend.Services
 
                 var season = request.Name;
 
-                var controller = ServicePool.Instance.GetService<DatabaseAccess>();
-                var miner = ServicePool.Instance.GetService<SeleniumMiner>();
+                var controller = this.Controller;
+                var miner = this.Miner;
 
                 IEnumerable<Anime> animes;
                 if (Season.IsPlanToWatch(season))
@@ -102,8 +113,8 @@ namespace SeasonBackend.Services
                 var season = request.Name;
                 var isPlanToWatch = Season.IsPlanToWatch(season);
 
-                var controller = ServicePool.Instance.GetService<DatabaseAccess>();
-                var miner = ServicePool.Instance.GetService<SeleniumMiner>();
+                var controller = this.Controller;
+                var miner = this.Miner;
                 // TODO get name via request and save it in database
                 var mineResult = miner.MineMalList("specop0");
                 var animes = controller.Do(x =>
@@ -183,10 +194,10 @@ namespace SeasonBackend.Services
 
                 var id = request.Id;
 
-                var controller = ServicePool.Instance.GetService<DatabaseAccess>();
+                var controller = this.Controller;
                 var anime = controller.Do(x => controller.GetAnime(x, id));
 
-                var miner = ServicePool.Instance.GetService<SeleniumMiner>();
+                var miner = this.Miner;
                 var mineResult = miner.MineHoster(anime);
 
                 controller.Do(x =>
@@ -207,13 +218,13 @@ namespace SeasonBackend.Services
 
                 var id = request.Id;
 
-                var controller = ServicePool.Instance.GetService<DatabaseAccess>();
+                var controller = this.Controller;
 
                 var anime = controller.Do(x =>
                 {
                     var anime = controller.GetAnime(x, id);
 
-                    var miner = ServicePool.Instance.GetService<SeleniumMiner>();
+                    var miner = this.Miner;
                     var hosters = miner.ParseHoster(anime, request.Hosters);
 
                     controller.UpdateHosters(x, anime, hosters);
@@ -250,11 +261,12 @@ namespace SeasonBackend.Services
 
             var hoster = anime.Hoster.Select(x =>
             {
-                var hoster = new Hoster();
-
-                hoster.Name = x.Name ?? string.Empty;
-                hoster.HosterType = x.HosterType;
-                hoster.Url = x.Url ?? string.Empty;
+                var hoster = new Hoster
+                {
+                    Name = x.Name ?? string.Empty,
+                    HosterType = this.HosterService.GetHosterTypeFromUrl(x.Url),
+                    Url = x.Url ?? string.Empty
+                };
 
                 return hoster;
             });

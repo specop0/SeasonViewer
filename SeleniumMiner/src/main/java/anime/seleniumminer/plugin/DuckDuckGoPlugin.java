@@ -1,8 +1,6 @@
 package anime.seleniumminer.plugin;
 
 import anime.seleniumminer.plugin.webdriver.IWebDriver;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;

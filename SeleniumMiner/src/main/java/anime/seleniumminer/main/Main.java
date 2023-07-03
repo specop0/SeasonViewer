@@ -14,10 +14,6 @@ public class Main {
         try {
 
             int port = 5022;
-            String settingsFilename = "settings.json";
-            if (args.length > 0) {
-                settingsFilename = args[0];
-            }
 
             IWebDriver driver = FirefoxDriverEx.GetNewWebDriver();
             IPlugin[] plugins = Plugins.GetAllPlugins();
