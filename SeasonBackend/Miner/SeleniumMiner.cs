@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
 using SeasonBackend.Database;
@@ -22,13 +23,13 @@ namespace SeasonBackend.Miner
 
         protected HttpClient Miner { get; }
 
-        public Anime[] MineAnimes(ICollection<Anime> animes)
+        public async Task<Anime[]> MineAnimesAsync(ICollection<Anime> animes)
         {
             var foundAnimes = new List<Anime>();
 
             foreach (var anime in animes)
             {
-                var newAnime = this.MineAnime(anime.Mal.Id);
+                var newAnime = await this.MineAnimeAsync(anime.Mal.Id);
                 if (newAnime != null)
                 {
                     newAnime.Mal.Status = anime.Mal.Status;
@@ -39,7 +40,7 @@ namespace SeasonBackend.Miner
             return foundAnimes.ToArray();
         }
 
-        private Anime MineAnime(string id)
+        private async Task<Anime> MineAnimeAsync(string id)
         {
             Anime anime = null;
             var requestUrl = new Uri($"https://myanimelist.net/anime/{id}");
@@ -50,10 +51,10 @@ namespace SeasonBackend.Miner
                 Url = requestUrl.ToString()
             };
 
-            var response = this.Miner.PostAsync("pageSource", pageSourceRequest.ToHttpContent()).Result;
+            var response = await this.Miner.PostAsync("pageSource", pageSourceRequest.ToHttpContent());
             if (response.IsSuccessStatusCode)
             {
-                var body = response.Content.ReadAsStringAsync().Result;
+                var body = await response.Content.ReadAsStringAsync();
                 anime = ParseAnime(body);
             }
 
@@ -142,7 +143,7 @@ namespace SeasonBackend.Miner
             return anime;
         }
 
-        public SeasonAnimeMineResult MineSeasonAnime(string season)
+        public async Task<SeasonAnimeMineResult> MineSeasonAnimeAsync(string season)
         {
             var result = new SeasonAnimeMineResult();
 
@@ -152,10 +153,10 @@ namespace SeasonBackend.Miner
                 Url = seasonUrl.ToString()
             };
 
-            var response = this.Miner.PostAsync("pageSource", pageSourceRequest.ToHttpContent()).Result;
+            var response = await this.Miner.PostAsync("pageSource", pageSourceRequest.ToHttpContent());
             if (response.IsSuccessStatusCode)
             {
-                var body = response.Content.ReadAsStringAsync().Result;
+                var body = await response.Content.ReadAsStringAsync();
                 result.Animes = ParseSeasonAnime(body, season);
             }
 
@@ -255,7 +256,7 @@ namespace SeasonBackend.Miner
             return animes.ToArray();
         }
 
-        public MalListMineResult[] MineMalList(string user)
+        public async Task<MalListMineResult[]> MineMalListAsync(string user)
         {
             var result = Array.Empty<MalListMineResult>();
 
@@ -265,10 +266,10 @@ namespace SeasonBackend.Miner
                 Url = seasonUrl.ToString()
             };
 
-            var response = this.Miner.PostAsync("pageSource", pageSourceRequest.ToHttpContent()).Result;
+            var response = await this.Miner.PostAsync("pageSource", pageSourceRequest.ToHttpContent());
             if (response.IsSuccessStatusCode)
             {
-                var body = response.Content.ReadAsStringAsync().Result;
+                var body = await response.Content.ReadAsStringAsync();
                 result = ParseMalList(body);
             }
 
@@ -331,7 +332,7 @@ namespace SeasonBackend.Miner
             return animes.ToArray();
         }
 
-        public MineHosterResult MineHoster(Anime anime)
+        public async Task<MineHosterResult> MineHosterAsync(Anime anime)
         {
             var result = new MineHosterResult();
 
@@ -339,7 +340,7 @@ namespace SeasonBackend.Miner
 
             // wakanim.tv
             {
-                var searchResults = this.ParseDuckDuckGo($"site:wakanim.tv {anime.Mal.Name}");
+                var searchResults = await this.MineDuckDuckGoSearchAsync($"site:wakanim.tv {anime.Mal.Name}");
                 var prefix = "https://www.wakanim.tv/de/v2/catalogue/show/";
                 var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix));
                 if (searchResult != null)
@@ -354,7 +355,7 @@ namespace SeasonBackend.Miner
 
             // crunchyroll
             {
-                var searchResults = this.ParseDuckDuckGo($"site:crunchyroll.com {anime.Mal.Name}");
+                var searchResults = await this.MineDuckDuckGoSearchAsync($"site:crunchyroll.com {anime.Mal.Name}");
                 var prefix = "https://www.crunchyroll.com/";
                 var searchResult = searchResults.Take(7).FirstOrDefault(x => x.Url.StartsWith(prefix) && x.Url[prefix.Length..].Split("/").Length == 1);
                 if (searchResult != null)
@@ -400,17 +401,17 @@ namespace SeasonBackend.Miner
             return hosters.ToArray();
         }
 
-        public DuckDuckGoSearchItem[] ParseDuckDuckGo(string searchQuery)
+        public async Task<DuckDuckGoSearchItem[]> MineDuckDuckGoSearchAsync(string searchQuery)
         {
             var request = new DuckDuckGoSearchRequest
             {
                 Search = searchQuery,
             };
 
-            var response = this.Miner.PostAsync("duckduckgo", request.ToHttpContent()).Result;
+            var response = await this.Miner.PostAsync("duckduckgo", request.ToHttpContent());
             if (response.IsSuccessStatusCode)
             {
-                var body = response.Content.ReadAsStringAsync().Result;
+                var body = await response.Content.ReadAsStringAsync();
                 return ParseDuckDuckGoSearch(body);
             }
 

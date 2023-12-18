@@ -4,11 +4,11 @@
     using NUnit.Framework;
     using SeasonBackend.Database;
     using SeasonBackend.Miner;
-    using SeasonBackend.Protos;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Net.Http;
     using System.Text.Json;
 
     public class SeleniumMinerTests : TestBase
@@ -128,8 +128,8 @@
             };
             var configurationBuilder = new ConfigurationBuilder();
             var configuration = configurationBuilder.AddInMemoryCollection(configurationDictionary).Build();
-            var testee = new SeleniumMiner(configuration);
-            var animes = testee.MineSeasonAnime(season).Animes;
+            var testee = new SeleniumMiner(new HttpClient(), configuration);
+            var animes = testee.MineSeasonAnimeAsync(season).Result.Animes;
             CollectionAssert.IsNotEmpty(animes);
             System.IO.File.WriteAllText(
                 "expected.json",
