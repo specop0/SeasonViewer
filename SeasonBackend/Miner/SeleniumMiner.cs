@@ -12,26 +12,15 @@ namespace SeasonBackend.Miner
 {
     public class SeleniumMiner
     {
-        public SeleniumMiner(IConfiguration configuration)
+        public SeleniumMiner(HttpClient httpClient, IConfiguration configuration)
         {
-            this.url = configuration.GetValue<string>("ConnectionStrings:SeleniumMinerUrl");
+            var url = configuration.GetValue<string>("ConnectionStrings:SeleniumMinerUrl");
+            httpClient.BaseAddress = new Uri(url);
+            httpClient.Timeout = TimeSpan.FromMinutes(15d);
+            this.Miner = httpClient;
         }
 
-        private readonly string url;
-
-        private HttpClient miner;
-        protected HttpClient Miner
-        {
-            get
-            {
-                this.miner ??= new HttpClient
-                {
-                    BaseAddress = new Uri(this.url),
-                    Timeout = TimeSpan.FromMinutes(15d)
-                };
-                return this.miner;
-            }
-        }
+        protected HttpClient Miner { get; }
 
         public Anime[] MineAnimes(ICollection<Anime> animes)
         {

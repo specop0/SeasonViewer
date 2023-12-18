@@ -2,56 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using LiteDB;
-using Microsoft.Extensions.Configuration;
 using SeasonBackend.Protos;
 using SeasonBackend.Services;
 
 namespace SeasonBackend.Database
 {
-    public class DatabaseAccess : IDisposable
+    public class DatabaseContext : IDisposable
     {
-        public DatabaseAccess(IConfiguration configuration, HosterService hosterService)
+        public DatabaseContext(LiteDatabase database, HosterService hosterService)
         {
-            var databasePath = configuration.GetValue<string>("ConnectionStrings:FileDatabasePath");
-            // https://www.litedb.org/
-            this.Data = new LiteDatabase(databasePath);
-            var animeCollection = this.GetAnimeCollection(this.Data);
-            animeCollection.EnsureIndex(x => x.Seasons);
-            animeCollection.EnsureIndex(x => x.Mal.Name);
-            animeCollection.EnsureIndex(x => x.Mal.Id);
-
+            this.Data = database;
             this.HosterService = hosterService;
         }
 
-        private static readonly object _lock = new();
-        private LiteDatabase Data { get; }
-        protected HosterService HosterService { get; }
+        private LiteDatabase Data { get; set; }
+        private HosterService HosterService { get; }
 
-        public void Do(Action<LiteDatabase> action)
-        {
-            lock (_lock)
-            {
-                action.Invoke(this.Data);
-            }
-        }
-        public T Do<T>(Func<LiteDatabase, T> action)
-        {
-            lock (_lock)
-            {
-                return action.Invoke(this.Data);
-            }
-        }
-
-        public IEnumerable<Anime> GetSeasonAnimes(LiteDatabase database, string season, OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
+        public IEnumerable<Anime> GetSeasonAnimes(string season, OrderCriteria orderBy, GroupCriteria groupBy, FilterCriteria filterBy)
         {
             IEnumerable<Anime> animes;
             if (Season.IsPlanToWatch(season))
             {
-                animes = this.GetAnimeCollection(database).Find(x => x.Mal.Status == ListStatus.Plan2Watch);
+                animes = this.GetAnimeCollection().Find(x => x.Mal.Status == ListStatus.Plan2Watch);
             }
             else
             {
-                animes = this.GetAnimeCollection(database).Find(x => x.Seasons.Contains(season));
+                animes = this.GetAnimeCollection().Find(x => x.Seasons.Contains(season));
             }
 
             // filter
@@ -112,21 +88,21 @@ namespace SeasonBackend.Database
             return animes;
         }
 
-        public Anime GetAnime(LiteDatabase database, long id)
+        public Anime GetAnime(long id)
         {
-            return this.GetAnimeCollection(database).Find(x => x.Id == id).FirstOrDefault();
+            return this.GetAnimeCollection().Find(x => x.Id == id).FirstOrDefault();
         }
 
-        public void UpdateHosters(LiteDatabase database, Anime anime, HosterInformation[] hosters)
+        public void UpdateHosters(Anime anime, HosterInformation[] hosters)
         {
             anime.HosterMinedAt = DateTime.UtcNow;
             anime.Hoster = hosters.ToList();
-            this.GetAnimeCollection(database).Update(anime);
+            this.GetAnimeCollection().Update(anime);
         }
 
-        public void InsertSeasonAnimes(LiteDatabase database, ICollection<Anime> animes)
+        public void InsertSeasonAnimes(ICollection<Anime> animes)
         {
-            var animeCollection = this.GetAnimeCollection(database);
+            var animeCollection = this.GetAnimeCollection();
 
             var animesToUpdate = new List<Anime>();
             var animesToAdd = new List<Anime>();
@@ -150,14 +126,14 @@ namespace SeasonBackend.Database
             animeCollection.Update(animesToUpdate);
         }
 
-        public ILiteCollection<Anime> GetAnimeCollection(LiteDatabase database)
+        public ILiteCollection<Anime> GetAnimeCollection()
         {
-            return database.GetCollection<Anime>("animes");
+            return this.Data.GetCollection<Anime>("animes");
         }
 
-        public void UpdateSeasonAnimes(LiteDatabase database, string season, Anime[] animes)
+        public void UpdateSeasonAnimes(string season, Anime[] animes)
         {
-            var animeDocuments = this.GetAnimeCollection(database);
+            var animeDocuments = this.GetAnimeCollection();
             foreach (var anime in animes)
             {
                 var matchingAnime = animeDocuments.FindOne(x => x.Mal.Id == anime.Mal.Id);
@@ -187,8 +163,7 @@ namespace SeasonBackend.Database
 
         public void Dispose()
         {
-            this.Data?.Dispose();
-            GC.SuppressFinalize(this);
+            this.Data = null;
         }
     }
 }

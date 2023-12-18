@@ -10,14 +10,14 @@ namespace SeasonBackend.Services
 {
     public class SeasonService : SeasonProvider.SeasonProviderBase
     {
-        public SeasonService(DatabaseAccess databaseAccess, SeleniumMiner miner, HosterService hosterService)
+        public SeasonService(DatabaseService databaseService, SeleniumMiner miner, HosterService hosterService)
         {
-            this.Controller = databaseAccess;
+            this.DatabaseService = databaseService;
             this.Miner = miner;
             this.HosterService = hosterService;
         }
 
-        protected DatabaseAccess Controller { get; }
+        protected DatabaseService DatabaseService { get; }
         protected SeleniumMiner Miner { get; }
         protected HosterService HosterService { get; }
 
@@ -29,10 +29,9 @@ namespace SeasonBackend.Services
 
                 var season = request.Name;
 
-                var controller = this.Controller;
-                var animes = controller.Do(x =>
+                var animes = this.DatabaseService.Do(context =>
                   {
-                      return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria).ToArray();
+                      return context.GetSeasonAnimes(season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria).ToArray();
                   });
 
                 if (!animes.Any() && request.FilterCriteria == FilterCriteria.FilterByNone)
@@ -41,9 +40,9 @@ namespace SeasonBackend.Services
                     var mineResult = miner.MineSeasonAnime(season);
                     if (mineResult.Animes.Any())
                     {
-                        controller.Do(x =>
+                        this.DatabaseService.Do(context =>
                         {
-                            controller.InsertSeasonAnimes(x, mineResult.Animes);
+                            context.InsertSeasonAnimes(mineResult.Animes);
                             animes = mineResult.Animes;
                         });
                     }
@@ -63,15 +62,14 @@ namespace SeasonBackend.Services
 
                 var season = request.Name;
 
-                var controller = this.Controller;
                 var miner = this.Miner;
 
                 IEnumerable<Anime> animes;
                 if (Season.IsPlanToWatch(season))
                 {
-                    animes = controller.Do(x =>
+                    animes = this.DatabaseService.Do(context =>
                     {
-                        return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
+                        return context.GetSeasonAnimes(season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
                     });
 
                     var animesToUpdate = animes.Where(x => x.Mal.Name == "< UNKNOWN >").ToList();
@@ -82,19 +80,19 @@ namespace SeasonBackend.Services
 
                     var mineResult = miner.MineAnimes(animesToUpdate);
 
-                    animes = controller.Do(x =>
+                    animes = this.DatabaseService.Do(context =>
                     {
-                        controller.InsertSeasonAnimes(x, mineResult);
-                        return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
+                        context.InsertSeasonAnimes(mineResult);
+                        return context.GetSeasonAnimes(season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
                     });
                 }
                 else
                 {
                     var mineResult = miner.MineSeasonAnime(season);
-                    animes = controller.Do(x =>
+                    animes = this.DatabaseService.Do(context =>
                     {
-                        controller.UpdateSeasonAnimes(x, season, mineResult.Animes);
-                        return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
+                        context.UpdateSeasonAnimes(season, mineResult.Animes);
+                        return context.GetSeasonAnimes(season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
                     });
                 }
 
@@ -113,13 +111,12 @@ namespace SeasonBackend.Services
                 var season = request.Name;
                 var isPlanToWatch = Season.IsPlanToWatch(season);
 
-                var controller = this.Controller;
                 var miner = this.Miner;
                 // TODO get name via request and save it in database
                 var mineResult = miner.MineMalList("specop0");
-                var animes = controller.Do(x =>
+                var animes = this.DatabaseService.Do(context =>
                 {
-                    var animesDocument = controller.GetAnimeCollection(x);
+                    var animesDocument = context.GetAnimeCollection();
                     var knownAnimeIds = new HashSet<long>();
                     var unknownAnimes = new List<Anime>();
                     foreach (var listEntry in mineResult)
@@ -150,8 +147,7 @@ namespace SeasonBackend.Services
                     // animes with state "plan 2 watch" might be removed from the MAL list
                     if (isPlanToWatch)
                     {
-                        var planToWatchAnimes = controller.GetSeasonAnimes(
-                                x,
+                        var planToWatchAnimes = context.GetSeasonAnimes(
                                 season,
                                 OrderCriteria.OrderByNone,
                                 GroupCriteria.GroupByNone,
@@ -174,10 +170,10 @@ namespace SeasonBackend.Services
 
                     if (unknownAnimes.Any())
                     {
-                        controller.InsertSeasonAnimes(x, unknownAnimes);
+                        context.InsertSeasonAnimes(unknownAnimes);
                     }
 
-                    return controller.GetSeasonAnimes(x, season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
+                    return context.GetSeasonAnimes(season, request.OrderCriteria, request.GroupCriteria, request.FilterCriteria);
                 });
 
                 response.Animes.AddRange(animes.Select(this.Convert));
@@ -194,15 +190,14 @@ namespace SeasonBackend.Services
 
                 var id = request.Id;
 
-                var controller = this.Controller;
-                var anime = controller.Do(x => controller.GetAnime(x, id));
+                var anime = this.DatabaseService.Do(context => context.GetAnime(id));
 
                 var miner = this.Miner;
                 var mineResult = miner.MineHoster(anime);
 
-                controller.Do(x =>
+                this.DatabaseService.Do(context =>
                 {
-                    controller.UpdateHosters(x, anime, mineResult.Hosters);
+                    context.UpdateHosters(anime, mineResult.Hosters);
                 });
 
                 response.Anime = this.Convert(anime);
@@ -218,16 +213,14 @@ namespace SeasonBackend.Services
 
                 var id = request.Id;
 
-                var controller = this.Controller;
-
-                var anime = controller.Do(x =>
+                var anime = this.DatabaseService.Do(context =>
                 {
-                    var anime = controller.GetAnime(x, id);
+                    var anime = context.GetAnime(id);
 
                     var miner = this.Miner;
                     var hosters = miner.ParseHoster(anime, request.Hosters);
 
-                    controller.UpdateHosters(x, anime, hosters);
+                    context.UpdateHosters(anime, hosters);
 
                     return anime;
                 });

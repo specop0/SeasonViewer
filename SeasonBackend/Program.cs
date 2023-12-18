@@ -19,9 +19,9 @@ namespace SeasonBackend
         public static void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            services.AddSingleton<Database.DatabaseAccess>();
+            services.AddSingleton<Database.DatabaseService>();
             services.AddSingleton<Services.HosterService>();
-            services.AddSingleton<Miner.SeleniumMiner>();
+            services.AddHttpClient<Miner.SeleniumMiner>();
         }
 
         public static void Configure(WebApplication app)
