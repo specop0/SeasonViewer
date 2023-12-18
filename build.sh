@@ -15,8 +15,3 @@ echo $DIR/SeasonViewer
 
 echo dotnet publish --configuration Release --output bin/publish
 dotnet publish --configuration Release --output bin/publish
-
-# Miner
-cd $DIR/SeleniumMiner
-echo $DIR/SeleniumMiner
-mvn clean compile assembly:single
