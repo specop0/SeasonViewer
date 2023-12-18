@@ -1,10 +1,12 @@
 ﻿namespace SeasonTests.Backend.Miner
 {
+    using Microsoft.Extensions.Configuration;
     using NUnit.Framework;
     using SeasonBackend.Database;
     using SeasonBackend.Miner;
     using SeasonBackend.Protos;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text.Json;
@@ -120,8 +122,13 @@
         public void TestParseAnime()
         {
             var season = "2020/summer";
-            Environment.SetEnvironmentVariable("seleniumMinerUrl", "http://localhost:22471/mine/");
-            var testee = new SeleniumMiner();
+            var configurationDictionary = new Dictionary<string, string>
+            {
+                { "ConnectionStrings:SeleniumMinerUrl", "http://localhost:22471/mine/" },
+            };
+            var configurationBuilder = new ConfigurationBuilder();
+            var configuration = configurationBuilder.AddInMemoryCollection(configurationDictionary).Build();
+            var testee = new SeleniumMiner(configuration);
             var animes = testee.MineSeasonAnime(season).Animes;
             CollectionAssert.IsNotEmpty(animes);
             System.IO.File.WriteAllText(

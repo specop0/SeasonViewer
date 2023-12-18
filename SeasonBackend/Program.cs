@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace SeasonBackend
@@ -7,14 +9,30 @@ namespace SeasonBackend
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var builder = WebApplication.CreateBuilder(args);
+            ConfigureServices(builder.Services);
+            var app = builder.Build();
+            Configure(app);
+            app.Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+        public static void ConfigureServices(IServiceCollection services)
+        {
+            services.AddGrpc();
+            services.AddSingleton<Database.DatabaseAccess>();
+            services.AddSingleton<Services.HosterService>();
+            services.AddSingleton<Miner.SeleniumMiner>();
+        }
+
+        public static void Configure(WebApplication app)
+        {
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.MapGrpcService<Services.SeasonService>();
+            app.MapGet("/", () => "SeasonBackend is running");
+        }
     }
 }

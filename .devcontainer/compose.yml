@@ -1,0 +1,20 @@
+services:
+  seasonviewer:
+    build:
+      context: .
+    volumes:
+      - ../..:/workspaces:cached
+      - ../mnt:/mnt
+    command: sleep infinity
+
+    networks:
+      - seasonviewer
+      - seleniumminer
+
+networks:
+  seasonviewer:
+    name: seasonviewer
+    external: true
+  seleniumminer:
+    name: seleniumminer
+    external: true

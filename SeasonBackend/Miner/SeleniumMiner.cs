@@ -14,7 +14,7 @@ namespace SeasonBackend.Miner
     {
         public SeleniumMiner(IConfiguration configuration)
         {
-            this.url = configuration.GetValue<string>("SeleniumMinerUrl");
+            this.url = configuration.GetValue<string>("ConnectionStrings:SeleniumMinerUrl");
         }
 
         private readonly string url;

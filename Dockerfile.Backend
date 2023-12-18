@@ -1,0 +1,18 @@
+# Build Preperation
+FROM mcr.microsoft.com/dotnet/sdk:6.0  as build
+WORKDIR /src
+COPY SeasonBackend/SeasonBackend.csproj SeasonBackend/SeasonBackend.csproj
+RUN dotnet restore SeasonBackend/SeasonBackend.csproj
+COPY SeasonBackend SeasonBackend
+
+# Publish
+FROM build as publish
+WORKDIR /src
+RUN dotnet publish SeasonBackend/SeasonBackend.csproj --configuration Release --output publish
+
+# Run
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /app
+COPY --from=publish /src/publish .
+ENTRYPOINT ["dotnet", "SeasonBackend.dll"]
+EXPOSE 5021

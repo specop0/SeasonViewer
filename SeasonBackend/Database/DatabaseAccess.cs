@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LiteDB;
+using Microsoft.Extensions.Configuration;
 using SeasonBackend.Protos;
 using SeasonBackend.Services;
 
@@ -9,10 +10,11 @@ namespace SeasonBackend.Database
 {
     public class DatabaseAccess : IDisposable
     {
-        public DatabaseAccess(string databaseName, HosterService hosterService)
+        public DatabaseAccess(IConfiguration configuration, HosterService hosterService)
         {
+            var databasePath = configuration.GetValue<string>("ConnectionStrings:FileDatabasePath");
             // https://www.litedb.org/
-            this.Data = new LiteDatabase(databaseName);
+            this.Data = new LiteDatabase(databasePath);
             var animeCollection = this.GetAnimeCollection(this.Data);
             animeCollection.EnsureIndex(x => x.Seasons);
             animeCollection.EnsureIndex(x => x.Mal.Name);
@@ -21,19 +23,20 @@ namespace SeasonBackend.Database
             this.HosterService = hosterService;
         }
 
+        private static readonly object _lock = new();
         private LiteDatabase Data { get; }
         protected HosterService HosterService { get; }
 
         public void Do(Action<LiteDatabase> action)
         {
-            lock (this)
+            lock (_lock)
             {
                 action.Invoke(this.Data);
             }
         }
         public T Do<T>(Func<LiteDatabase, T> action)
         {
-            lock (this)
+            lock (_lock)
             {
                 return action.Invoke(this.Data);
             }

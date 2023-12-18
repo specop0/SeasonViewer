@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build & run",
+            "type": "shell",
+            "command": "docker compose up --build --wait",
+            "group": "build"
+        },
+        {
+            "label": "test",
+            "type": "shell",
+            "command": "docker build . --target test --tag seasonviewer-test && docker run --rm -it seasonviewer-test",
+            "group": "test"
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+services:
+  seasonbackend:
+    build:
+      context: .
+      dockerfile: Dockerfile.Backend
+    restart: always
+    user: www-data
+    volumes:
+      - ./mnt:/mnt
+    networks:
+      - seasonviewer
+      - seleniumminer
+
+  seasonviewer:
+    build:
+      context: .
+      dockerfile: Dockerfile.Frontend
+    restart: always
+    user: www-data
+    networks:
+      - seasonviewer
+
+networks:
+  seasonviewer:
+    name: seasonviewer
+  seleniumminer:
+    name: seleniumminer
+    external: true
