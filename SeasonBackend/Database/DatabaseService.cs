@@ -42,7 +42,7 @@ namespace SeasonBackend.Database
             lock (_lock)
             {
                 using var databaseAccess = new DatabaseContext(this.Data, this.HosterService);
-                return action.Invoke(new DatabaseContext(this.Data, this.HosterService));
+                return action.Invoke(databaseAccess);
             }
         }
         public void Dispose()
