@@ -6,7 +6,7 @@ services:
     restart: always
     user: www-data
     volumes:
-      - ./mnt:/mnt
+      - db:/mnt
     networks:
       - seasonviewer
       - seleniumminer
@@ -33,3 +33,6 @@ networks:
   seleniumminer:
     name: seleniumminer
     external: true
+
+volumes:
+  db:

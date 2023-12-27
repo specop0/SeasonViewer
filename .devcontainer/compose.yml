@@ -4,7 +4,7 @@ services:
       context: .
     volumes:
       - ../..:/workspaces:cached
-      - ../mnt-dev:/mnt
+      - ../mnt:/mnt
     command: sleep infinity
 
     networks:
