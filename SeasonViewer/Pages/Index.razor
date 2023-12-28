@@ -9,7 +9,7 @@
 }
 else
 {
-    <div>
+    <div class="flex">
         <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">@(this.IsUpdateSeasonRequested ? "..." : "Update MAL Season")</button>
         <button type="button" class="btn btn-secondary" @onclick="@UpdateMalListRequested">@(this.IsUpdateMalListRequested ? "..." : "Update MAL List")</button>
         <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">@(this.IsMineMissingTriggered ? "..." : "Mine Missing")</button>

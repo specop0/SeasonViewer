@@ -1,48 +1,40 @@
 ﻿@inject AnimeSeasonService AnimeSeason
 
-<div id="@this.Anime.Id" class="grid-container" style="margin-bottom: 50px">
-    <div class="grid-item grid-item-span">
+<div id="@this.Anime.Id" class="flex margin-top" style="margin-bottom: 50px">
+    <div class="flex-span animetitle">
         <a href="@this.Anime.MalUrl">@this.Anime.Name</a>
     </div>
-    <div class="grid-item">
-        <img style="width: 95%;" src="@this.Anime.ImageUrl" alt="@this.Anime.Name" />
+    <div class="animeimg">
+        <img src="@this.Anime.ImageUrl" alt="@this.Anime.Name" />
     </div>
-    <div class="grid-item">
-        <div>
-            <label class="col-4">Name</label>
-            <span class="col-6">@this.Anime.Name</span>
-        </div>
-        <div>
-            <label class="col-4"># Episodes</label>
-            <span class="col-6">@this.Anime.MalEpisodesCount</span>
-        </div>
-        <div>
-            <label class="col-4">MAL Score</label>
-            <span class="col-6">@this.Anime.MalScore</span>
-        </div>
-        <div>
-            <label class="col-4">MAL # Members</label>
-            <span class="col-6">@this.Anime.MalMembers</span>
-        </div>
-        <div>
-            <label class="col-4">Hoster mined at</label>
+    <div>
+        <div class="grid">
+            <label>Name</label>
+            <span>@this.Anime.Name</span>
+            <label># Episodes</label>
+            <span>@this.Anime.MalEpisodesCount</span>
+            <label>MAL Score</label>
+            <span>@this.Anime.MalScore</span>
+            <label>MAL # Members</label>
+            <span>@this.Anime.MalMembers</span>
+            <label>Hoster mined at</label>
             @if (this.Anime.HosterMiningTriggered)
             {
-                <span class="col-6">...</span>
+                <span>...</span>
             }
             else
             {
-                <span class="col-6">@this.Anime.HosterMinedAt</span>
+                <span>@this.Anime.HosterMinedAt</span>
             }
         </div>
-        <div class="flex">
+        <div class="flex margin-top">
             @if (this.Anime.HosterEditRequested)
             {
-                <button type="button" class="btn btn-secondary">Edit</button>
+                <button type="button" class="btn btn-secondary" disabled><span class="oi oi-pencil" /> Edit</button>
             }
             else
             {
-                <button type="button" @onclick="@(() => this.ManualHosterEditRequested(this.Anime))" class="btn btn-secondary">Edit</button>
+                <button type="button" @onclick="@(() => this.ManualHosterEditRequested(this.Anime))" class="btn btn-secondary"><span class="oi oi-pencil" /> Edit</button>
             }
             @if (this.Anime.AnimeMiningTriggered)
             {
@@ -61,30 +53,34 @@
                 <button type="button" @onclick="@(() => this.HosterMiningRequested(this.Anime))" class="btn btn-secondary"><span class="oi oi-reload" /> Refresh Hoster</button>
             }
         </div>
-        <div>
+        <div class="flex flex-direction-column margin-top">
             @if (!this.Anime.HosterMiningTriggered)
             {
                 @if (this.Anime.HosterEditRequested)
                 {
-                    <button type="button" @onclick="@(() => this.Anime.HosterEdit.Add(new Hoster()))" class="btn btn-secondary">Add</button>
-                    <div>
-                @foreach (var hoster in this.Anime.HosterEdit)
-                        {
-                            <div>
-                                <button type="button" @onclick="@(() => this.Anime.HosterEdit.Remove(hoster))" class="btn btn-secondary">Remove</button>
-                                <input type="text" class="col-6" @bind="@hoster.Url" />
-                                <input type="text" class="col-3" @bind="@hoster.Name" />
-                            </div>
-                        }
+                    <div class="flex">
+                        <button type="button" @onclick="@(() => this.Anime.HosterEdit.Add(new Hoster()))" class="btn btn-secondary">Add</button>
+                        <button type="button" @onclick="@(() => this.ManualHosterEditCancelRequested(this.Anime))" class="btn btn-secondary">Cancel</button>
+                        <button type="button" @onclick="@(() => this.ManualHosterEditOkRequested(this.Anime))" class="btn btn-primary">OK</button>
                     </div>
-                    <button type="button" @onclick="@(() => this.ManualHosterEditOkRequested(this.Anime))" class="btn btn-primary">OK</button>
-                    <button type="button" @onclick="@(() => this.ManualHosterEditCancelRequested(this.Anime))" class="btn btn-secondary">Cancel</button>
+                    <div>
+                        <div class="grid grid-template-hosteredit">
+                            @foreach (var hoster in this.Anime.HosterEdit)
+                            {
+                                <div>
+                                    <button type="button" @onclick="@(() => this.Anime.HosterEdit.Remove(hoster))" class="btn btn-secondary">Remove</button>
+                                </div>
+                                <input type="text" @bind="@hoster.Url" />
+                                <input type="text" @bind="@hoster.Name" />
+                            }
+                        </div>
+                    </div>
                 }
                 else
                 {
                     @foreach (var hoster in this.Anime.Hoster)
                     {
-                        <div class="col-12">
+                        <div>
                             <a href="@hoster.Url">
                                 <img src="@hoster.HosterImageUrl" width="16" height="16" />
                                 <span> @hoster.Name @@ @hoster.HosterName</span>
