@@ -334,6 +334,10 @@ namespace SeasonBackend.Miner
         public async Task<MalInformation> MineMalAsync(Anime anime)
         {
             var newAnime = await this.MineAnimeAsync(anime.Mal.Id);
+            if (newAnime?.Mal != null)
+            {
+                newAnime.Mal.Status = anime.Mal.Status;
+            }
             return newAnime?.Mal;
         }
 
