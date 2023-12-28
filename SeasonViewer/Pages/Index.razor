@@ -10,9 +10,30 @@
 else
 {
     <div class="flex">
-        <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">@(this.IsUpdateSeasonRequested ? "..." : "Update MAL Season")</button>
-        <button type="button" class="btn btn-secondary" @onclick="@UpdateMalListRequested">@(this.IsUpdateMalListRequested ? "..." : "Update MAL List")</button>
-        <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">@(this.IsMineMissingTriggered ? "..." : "Mine Missing")</button>
+        @if (this.IsUpdateSeasonRequested)
+        {
+            <button type="button" class="btn btn-secondary" disabled>Updating MAL Season...</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">Update MAL Season</button>
+        }
+        @if (this.IsUpdateMalListRequested)
+        {
+            <button type="button" class="btn btn-secondary" disabled>Updating MAL List...</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-secondary" @onclick="@UpdateMalListRequested">Update MAL List</button>
+        }
+        @if (this.IsMineMissingRequested)
+        {
+            <button type="button" class="btn btn-secondary" disabled>Mining Missing...</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">Mine Missing</button>
+        }
         <select @bind="OrderBy">
             <option value="@OrderCriteria.OrderByNone">None</option>
             <option value="@OrderCriteria.OrderByName">Name</option>
@@ -88,6 +109,8 @@ else
             return;
         }
 
+        this.IsUpdateMalListRequested = true;
+
         this.Animes = (await this.AnimeSeason.UpdateSeasonAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
 
         this.IsUpdateSeasonRequested = false;
@@ -97,26 +120,28 @@ else
 
     public async Task UpdateMalListRequested()
     {
-        if (this.IsUpdateSeasonRequested)
+        if (this.IsUpdateMalListRequested)
         {
             return;
         }
+
+        this.IsUpdateMalListRequested = true;
 
         this.Animes = (await this.AnimeSeason.UpdateMalListAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
 
-        this.IsUpdateSeasonRequested = false;
+        this.IsUpdateMalListRequested = false;
     }
 
-    public bool IsMineMissingTriggered { get; set; }
+    public bool IsMineMissingRequested { get; set; }
 
     protected async Task MineMissingRequested()
     {
-        if (this.IsMineMissingTriggered)
+        if (this.IsMineMissingRequested)
         {
             return;
         }
 
-        this.IsMineMissingTriggered = true;
+        this.IsMineMissingRequested = true;
 
         var animesCopy = this.Animes.ToArray();
         foreach (var anime in animesCopy)
@@ -129,6 +154,6 @@ else
             await AnimeForm.HosterMiningRequested(anime, this.AnimeSeason);
         }
 
-        this.IsMineMissingTriggered = false;
+        this.IsMineMissingRequested = false;
     }
 }
