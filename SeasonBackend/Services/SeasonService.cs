@@ -176,6 +176,26 @@ namespace SeasonBackend.Services
             return response;
         }
 
+        public override async Task<MineAnimeResponse> MineMal(MineAnimeRequest request, ServerCallContext context)
+        {
+            var response = new MineAnimeResponse();
+
+            var anime = this.DatabaseService.Do(context => context.GetAnime(request.Id));
+
+            var newMalInformation = await this.Miner.MineMalAsync(anime);
+            if (newMalInformation != null)
+            {
+                anime = this.DatabaseService.Do(context =>
+                {
+                    context.UpdateMal(anime, newMalInformation);
+                    return context.GetAnime(request.Id);
+                });
+            }
+
+            response.Anime = this.Convert(anime);
+            return response;
+        }
+
         public async override Task<MineHosterResponse> MineHoster(MineHosterRequest request, ServerCallContext context)
         {
             var response = new MineHosterResponse();
@@ -187,9 +207,10 @@ namespace SeasonBackend.Services
             var miner = this.Miner;
             var mineResult = await miner.MineHosterAsync(anime);
 
-            this.DatabaseService.Do(context =>
+            anime = this.DatabaseService.Do(context =>
             {
                 context.UpdateHosters(anime, mineResult.Hosters);
+                return context.GetAnime(request.Id);
             });
 
             response.Anime = this.Convert(anime);

@@ -56,6 +56,16 @@ namespace SeasonViewer.Data
             return response.Animes.Select(x => new Anime(x)).ToArray();
         }
 
+        public async Task<MineAnimeResponse> MineMalAsync(Anime anime)
+        {
+            var request = new MineAnimeRequest
+            {
+                Id = anime.Id,
+            };
+            var response = await this.Client.MineMalAsync(request);
+            return response;
+        }
+
         public async Task<MineHosterResponse> MineHosterAsync(Anime anime)
         {
             var mineHosterRequest = new MineHosterRequest

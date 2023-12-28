@@ -45,7 +45,6 @@ namespace SeasonBackend.Miner
             Anime anime = null;
             var requestUrl = new Uri($"https://myanimelist.net/anime/{id}");
 
-
             var pageSourceRequest = new MinePageSourceRequest
             {
                 Url = requestUrl.ToString()
@@ -330,6 +329,12 @@ namespace SeasonBackend.Miner
             }
 
             return animes.ToArray();
+        }
+
+        public async Task<MalInformation> MineMalAsync(Anime anime)
+        {
+            var newAnime = await this.MineAnimeAsync(anime.Mal.Id);
+            return newAnime?.Mal;
         }
 
         public async Task<MineHosterResult> MineHosterAsync(Anime anime)

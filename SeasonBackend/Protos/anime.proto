@@ -8,6 +8,7 @@ service SeasonProvider {
 	rpc GetSeason (SeasonAnimeRequest) returns (SeasonAnimeResponse);
 	rpc UpdateSeason (SeasonAnimeRequest) returns (SeasonAnimeResponse);
 	rpc UpdateMalList (SeasonAnimeRequest) returns (SeasonAnimeResponse);
+	rpc MineMal (MineAnimeRequest) returns (MineAnimeResponse);
 	rpc MineHoster (MineHosterRequest) returns (MineHosterResponse);
 	rpc EditHoster (EditHosterRequest) returns (EditHosterResponse);
 	rpc GetImageData (ImageDataRequest) returns (ImageDataResponse);
@@ -38,6 +39,14 @@ message EditHosterRequest {
 }
 
 message EditHosterResponse {
+	SeasonAnime Anime = 1;
+}
+
+message MineAnimeRequest {
+	int64 id = 1;
+}
+
+message MineAnimeResponse {
 	SeasonAnime Anime = 1;
 }
 

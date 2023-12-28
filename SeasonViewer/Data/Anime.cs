@@ -32,6 +32,8 @@ namespace SeasonViewer.Data
 
         public bool HosterMiningTriggered { get; set; }
 
+        public bool AnimeMiningTriggered { get; set; }
+
         public string[] Names { get; set; }
 
         private SeasonAnime model;

@@ -32,10 +32,33 @@
             }
             else
             {
-                <span class="col-6">
-                    @this.Anime.HosterMinedAt
-                    <button type="button" @onclick="@(() => this.HosterMiningRequested(this.Anime))" class="btn btn-secondary"><span class="oi oi-reload" /> Refresh</button>
-                </span>
+                <span class="col-6">@this.Anime.HosterMinedAt</span>
+            }
+        </div>
+        <div class="flex">
+            @if (this.Anime.HosterEditRequested)
+            {
+                <button type="button" class="btn btn-secondary">Edit</button>
+            }
+            else
+            {
+                <button type="button" @onclick="@(() => this.ManualHosterEditRequested(this.Anime))" class="btn btn-secondary">Edit</button>
+            }
+            @if (this.Anime.AnimeMiningTriggered)
+            {
+                <button type="button" class="btn btn-secondary" disabled><span class="oi oi-reload" /> Refreshing Anime...</button>
+            }
+            else
+            {
+                <button type="button" @onclick="@(() => this.MalMiningRequested(this.Anime))" class="btn btn-secondary"><span class="oi oi-reload" /> Refresh Anime</button>
+            }
+            @if (this.Anime.HosterMiningTriggered)
+            {
+                <button type="button" class="btn btn-secondary" disabled><span class="oi oi-reload" /> Refreshing Hoster...</button>
+            }
+            else
+            {
+                <button type="button" @onclick="@(() => this.HosterMiningRequested(this.Anime))" class="btn btn-secondary"><span class="oi oi-reload" /> Refresh Hoster</button>
             }
         </div>
         <div>
@@ -43,29 +66,22 @@
             {
                 @if (this.Anime.HosterEditRequested)
                 {
-                    <button type="button" @onclick="@(() => this.Anime.HosterEdit.Add(new Hoster()))">Add</button>
+                    <button type="button" @onclick="@(() => this.Anime.HosterEdit.Add(new Hoster()))" class="btn btn-secondary">Add</button>
                     <div>
-                        @foreach (var hoster in this.Anime.HosterEdit)
+                @foreach (var hoster in this.Anime.HosterEdit)
                         {
                             <div>
-                                <button type="button" @onclick="@(() => this.Anime.HosterEdit.Remove(hoster))">Remove</button>
+                                <button type="button" @onclick="@(() => this.Anime.HosterEdit.Remove(hoster))" class="btn btn-secondary">Remove</button>
                                 <input type="text" class="col-6" @bind="@hoster.Url" />
                                 <input type="text" class="col-3" @bind="@hoster.Name" />
                             </div>
                         }
                     </div>
-                    <button type="button" @onclick="@(() => this.ManualHosterEditRequested(this.Anime))" class="btn btn-primary">OK</button>
-                    <button type="button" @onclick="@(() => this.Anime.HosterEditRequested = false)" class="btn btn-secondary">Cancel</button>
+                    <button type="button" @onclick="@(() => this.ManualHosterEditOkRequested(this.Anime))" class="btn btn-primary">OK</button>
+                    <button type="button" @onclick="@(() => this.ManualHosterEditCancelRequested(this.Anime))" class="btn btn-secondary">Cancel</button>
                 }
                 else
                 {
-                    <button type="button" @onclick="@(() => {
-                                                              this.Anime.HosterEditRequested = true;
-                                                              this.Anime.HosterEdit.Clear();
-                                                              this.Anime.HosterEdit.AddRange(this.Anime.Hoster.Select(x => new Hoster { Id = x.Id, HosterType = x.Model.HosterType, Name = x.Name, Url = x.Url }));
-                                                          })" class="btn btn-secondary">
-                        Edit
-                    </button>
                     @foreach (var hoster in this.Anime.Hoster)
                     {
                         <div class="col-12">
@@ -107,7 +123,14 @@
         anime.HosterMiningTriggered = false;
     }
 
-    protected async Task ManualHosterEditRequested(Anime anime)
+    protected void ManualHosterEditRequested(Anime anime)
+    {
+        anime.HosterEditRequested = true;
+        anime.HosterEdit.Clear();
+        anime.HosterEdit.AddRange(anime.Hoster.Select(x => new Hoster { Id = x.Id, HosterType = x.Model.HosterType, Name = x.Name, Url = x.Url }));
+    }
+
+    protected async Task ManualHosterEditOkRequested(Anime anime)
     {
         var response = await this.AnimeSeason.EditHosterAsync(anime);
 
@@ -116,6 +139,29 @@
             anime.Model = response.Anime;
         }
         anime.HosterEditRequested = false;
+    }
+
+    protected void ManualHosterEditCancelRequested(Anime anime)
+    {
+        anime.HosterEditRequested = false;
+    }
+
+    protected async Task MalMiningRequested(Anime anime)
+    {
+        if (anime.AnimeMiningTriggered)
+        {
+            return;
+        }
+
+        anime.AnimeMiningTriggered = true;
+
+        var response = await this.AnimeSeason.MineMalAsync(anime);
+        if (response?.Anime != null)
+        {
+            anime.Model = response.Anime;
+        }
+
+        anime.AnimeMiningTriggered = false;
     }
 
 }

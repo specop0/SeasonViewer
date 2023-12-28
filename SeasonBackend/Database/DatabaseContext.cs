@@ -93,6 +93,12 @@ namespace SeasonBackend.Database
             return this.GetAnimeCollection().Find(x => x.Id == id).FirstOrDefault();
         }
 
+        public void UpdateMal(Anime anime, MalInformation malInformation)
+        {
+            anime.Mal = malInformation;
+            this.GetAnimeCollection().Update(anime);
+        }
+
         public void UpdateHosters(Anime anime, HosterInformation[] hosters)
         {
             anime.HosterMinedAt = DateTime.UtcNow;
