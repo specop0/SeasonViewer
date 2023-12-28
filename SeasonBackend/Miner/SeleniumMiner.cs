@@ -456,5 +456,31 @@ namespace SeasonBackend.Miner
 
             return result.ToArray();
         }
+
+        public async Task<byte[]> MineImageAsync(string imageUrl)
+        {
+            var result = Array.Empty<byte>();
+
+            var request = new ScreenshotRequest
+            {
+                Url = imageUrl,
+            };
+
+            var response = await this.Miner.PostAsync(
+                "screenshot",
+                request.ToHttpContent());
+
+            if (response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                var mineResult = body.Deserialize<ScreenshotResult>();
+                if (!string.IsNullOrEmpty(mineResult.ImageData))
+                {
+                    result = Convert.FromBase64String(mineResult.ImageData);
+                }
+            }
+
+            return result;
+        }
     }
 }

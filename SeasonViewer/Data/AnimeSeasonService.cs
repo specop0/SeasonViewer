@@ -78,5 +78,22 @@ namespace SeasonViewer.Data
 
             return response;
         }
+
+        public async Task<ImageDataResponse> GetImageDataAsync(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return default;
+            }
+
+            var request = new ImageDataRequest
+            {
+                Id = id,
+            };
+
+            var response = await this.Client.GetImageDataAsync(request);
+
+            return response;
+        }
     }
 }

@@ -161,6 +161,33 @@ namespace SeasonBackend.Database
             }
         }
 
+        public ILiteCollection<ImageData> GetImageDataCollection()
+        {
+            return this.Data.GetCollection<ImageData>("imageData");
+        }
+
+        public ImageData GetImageData(string id)
+        {
+            return this.GetImageDataCollection().FindById(id);
+        }
+
+        public void SetImageData(ImageData imageData)
+        {
+            var images = this.GetImageDataCollection();
+
+            var existingImageData = images.FindById(imageData.Id);
+            if (existingImageData == null)
+            {
+                images.Insert(imageData);
+            }
+            else
+            {
+                existingImageData.Data = imageData.Data;
+                existingImageData.MimeType = imageData.MimeType;
+                images.Update(existingImageData);
+            }
+        }
+
         public void Dispose()
         {
             this.Data = null;

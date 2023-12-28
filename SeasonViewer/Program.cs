@@ -47,6 +47,8 @@ namespace SeasonViewer
 
             app.UseRouting();
 
+            app.MapApiEndpoints();
+
             app.MapBlazorHub();
             app.MapFallbackToPage("/_Host");
         }

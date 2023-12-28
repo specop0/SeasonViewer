@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Grpc.Core;
+using Microsoft.AspNetCore.StaticFiles;
 using SeasonBackend.Database;
 using SeasonBackend.Miner;
 using SeasonBackend.Protos;
@@ -229,7 +232,11 @@ namespace SeasonBackend.Services
             {
                 seasonAnime.MalId = anime.Mal.Id;
                 seasonAnime.MalName = anime.Mal.Name ?? string.Empty; ;
-                seasonAnime.MalImageUrl = anime.Mal.ImageUrl ?? string.Empty;
+                seasonAnime.ImageId = string.Empty;
+                if (!string.IsNullOrEmpty(anime.Mal.ImageUrl))
+                {
+                    seasonAnime.ImageId = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(anime.Mal.ImageUrl));
+                }
                 seasonAnime.MalScore = anime.Mal.Score;
                 seasonAnime.MalMembers = anime.Mal.MemberCount;
                 seasonAnime.MalEpisodesCount = anime.Mal.EpisodesCount;
@@ -254,6 +261,66 @@ namespace SeasonBackend.Services
             seasonAnime.Hoster.AddRange(hoster);
 
             return seasonAnime;
+        }
+
+        public override async Task<ImageDataResponse> GetImageData(ImageDataRequest request, ServerCallContext context)
+        {
+            var response = new ImageDataResponse();
+
+            if (string.IsNullOrEmpty(request.Id))
+            {
+                return response;
+            }
+
+            var imageData = await this.GetImageData(request.Id);
+
+            response.MimeType = imageData.MimeType ?? string.Empty;
+            if (imageData.Data != null)
+            {
+                response.Data = ByteString.CopyFrom(imageData.Data);
+            }
+
+            return response;
+        }
+
+        private async Task<ImageData> GetImageData(string id)
+        {
+            var imageData = this.DatabaseService.Do(context => context.GetImageData(id));
+
+            if (imageData == null)
+            {
+                var imageUrl = Encoding.UTF8.GetString(System.Convert.FromBase64String(id));
+
+                var data = await this.Miner.MineImageAsync(imageUrl);
+
+                if (data.Any())
+                {
+                    var provider = new FileExtensionContentTypeProvider();
+                    if (!provider.TryGetContentType(imageUrl, out var mimeType))
+                    {
+                        mimeType = "application/octet-stream";
+                    }
+
+                    imageData = new ImageData
+                    {
+                        Id = id,
+                        Data = data,
+                        MimeType = mimeType,
+                    };
+                }
+                else
+                {
+                    imageData = new ImageData
+                    {
+                        Id = id,
+                        MimeType = string.Empty,
+                    };
+                }
+
+                this.DatabaseService.Do(context => context.SetImageData(imageData));
+            }
+
+            return imageData;
         }
     }
 }

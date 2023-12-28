@@ -18,7 +18,7 @@ namespace SeasonViewer.Data
 
         public string Name => this.Model.MalName;
 
-        public string ImageUrl => this.Model.MalImageUrl;
+        public string ImageUrl => string.IsNullOrEmpty(this.Model.ImageId) ? null : $"api/image/{this.Model.ImageId}";
 
         public string MalUrl => $"https://myanimelist.net/anime/{this.MalId}";
 

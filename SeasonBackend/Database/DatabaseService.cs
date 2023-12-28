@@ -17,9 +17,13 @@ namespace SeasonBackend.Database
             this.Do(databaseAccess =>
             {
                 var animeCollection = databaseAccess.GetAnimeCollection();
+                animeCollection.EnsureIndex(x => x.Id, unique: true);
                 animeCollection.EnsureIndex(x => x.Seasons);
                 animeCollection.EnsureIndex(x => x.Mal.Name);
                 animeCollection.EnsureIndex(x => x.Mal.Id);
+
+                var imageDataCollection = databaseAccess.GetImageDataCollection();
+                imageDataCollection.EnsureIndex(x => x.Id, unique: true);
             });
 
         }

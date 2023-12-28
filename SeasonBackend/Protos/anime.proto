@@ -10,6 +10,7 @@ service SeasonProvider {
 	rpc UpdateMalList (SeasonAnimeRequest) returns (SeasonAnimeResponse);
 	rpc MineHoster (MineHosterRequest) returns (MineHosterResponse);
 	rpc EditHoster (EditHosterRequest) returns (EditHosterResponse);
+	rpc GetImageData (ImageDataRequest) returns (ImageDataResponse);
 }
 
 message SeasonAnimeRequest {
@@ -40,11 +41,21 @@ message EditHosterResponse {
 	SeasonAnime Anime = 1;
 }
 
+message ImageDataRequest {
+	string id = 1;
+}
+
+message ImageDataResponse {
+	string id = 1;
+	string mimeType = 2;
+	bytes data = 3;
+}
+
 message SeasonAnime {
 	int64 id = 1;
 	string malId = 2;
 	string malName = 3;
-	string malImageUrl = 4;
+	string imageId = 4;
 	uint32 malScore = 5;
 	uint64 malMembers = 6;
 	uint64 malEpisodesCount = 7;
