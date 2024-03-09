@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile.Backend
     restart: always
-    user: www-data
+    user: "1000:1000"
     volumes:
       - db:/mnt
     networks:
@@ -19,7 +19,6 @@ services:
       context: .
       dockerfile: Dockerfile.Frontend
     restart: always
-    user: www-data
     networks:
       - seasonviewer
     environment:

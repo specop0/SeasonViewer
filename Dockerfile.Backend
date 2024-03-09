@@ -1,5 +1,5 @@
 # Build Preperation
-FROM mcr.microsoft.com/dotnet/sdk:6.0  as build
+FROM mcr.microsoft.com/dotnet/sdk:8.0  as build
 WORKDIR /src
 COPY SeasonBackend/SeasonBackend.csproj SeasonBackend/SeasonBackend.csproj
 RUN dotnet restore SeasonBackend/SeasonBackend.csproj
@@ -10,8 +10,19 @@ FROM build as publish
 WORKDIR /src
 RUN dotnet publish SeasonBackend/SeasonBackend.csproj --configuration Release --output publish
 
+# Chiseled Run image requires ICU library: https://github.com/ubuntu-rocks/dotnet/issues/21
+FROM golang:1.22 as chisel
+RUN git clone --depth 1 -b main https://github.com/canonical/chisel /opt/chisel
+WORKDIR /opt/chisel
+RUN go build ./cmd/chisel
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy AS icu
+COPY --from=chisel /opt/chisel/chisel /usr/bin/
+RUN mkdir /rootfs && chisel cut --release "ubuntu-22.04" --root /rootfs libicu70_libs
+
 # Run
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-chiseled
+COPY --from=icu /rootfs /
 WORKDIR /app
 COPY --from=publish /src/publish .
 ENTRYPOINT ["dotnet", "SeasonBackend.dll"]

@@ -1,5 +1,5 @@
 # Image with Node.js
-FROM mcr.microsoft.com/dotnet/sdk:6.0
+FROM mcr.microsoft.com/dotnet/sdk:8.0
 
 # Default User
 ARG USER_NAME=vscode

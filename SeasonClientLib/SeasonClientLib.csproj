@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Protos\"/>
@@ -9,9 +9,9 @@
     <Protobuf Include="..\SeasonBackend\Protos\anime.proto" Link="Protos\anime.proto" GrpcServices="Client"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.19.4"/>
-    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.42.0"/>
-    <PackageReference Include="Grpc.Tools" Version="2.44.0">
+    <PackageReference Include="Google.Protobuf" Version="3.*"/>
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.*"/>
+    <PackageReference Include="Grpc.Tools" Version="2.*">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

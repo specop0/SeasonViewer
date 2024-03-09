@@ -1,5 +1,5 @@
 # Build Preperation
-FROM mcr.microsoft.com/dotnet/sdk:6.0  as build
+FROM mcr.microsoft.com/dotnet/sdk:8.0  as build
 WORKDIR /src
 COPY SeasonClientLib/SeasonClientLib.csproj SeasonClientLib/SeasonClientLib.csproj
 COPY SeasonViewer/SeasonViewer.csproj SeasonViewer/SeasonViewer.csproj
@@ -14,7 +14,7 @@ WORKDIR /src
 RUN dotnet publish SeasonViewer/SeasonViewer.csproj --configuration Release --output publish
 
 # Run
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-chiseled
 WORKDIR /app
 COPY --from=publish /src/publish .
 ENTRYPOINT ["dotnet", "SeasonViewer.dll"]
