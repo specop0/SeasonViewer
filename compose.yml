@@ -8,8 +8,7 @@ services:
     volumes:
       - db:/mnt
     networks:
-      - seasonviewer
-      - seleniumminer
+      - main
     environment:
       - ASPNETCORE_URLS=
       - KESTREL__ENDPOINTS__HTTP2__URL=http://seasonbackend:5021
@@ -20,17 +19,15 @@ services:
       dockerfile: Dockerfile.Frontend
     restart: always
     networks:
-      - seasonviewer
+      - main
     environment:
       - ASPNETCORE_URLS=
       - KESTREL__ENDPOINTS__HTTP1__URL=http://seasonviewer:5020
       - BackendUrl=http://seasonbackend:5021
 
 networks:
-  seasonviewer:
-    name: seasonviewer
-  seleniumminer:
-    name: seleniumminer
+  main:
+    name: main
     external: true
 
 volumes:

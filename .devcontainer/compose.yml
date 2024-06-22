@@ -6,15 +6,10 @@ services:
       - ../..:/workspaces:cached
       - ../mnt:/mnt
     command: sleep infinity
-
     networks:
-      - seasonviewer
-      - seleniumminer
+      - main
 
 networks:
-  seasonviewer:
-    name: seasonviewer
-    external: true
-  seleniumminer:
-    name: seleniumminer
+  main:
+    name: main
     external: true
