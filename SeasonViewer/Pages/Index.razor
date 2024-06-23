@@ -109,7 +109,7 @@ else
             return;
         }
 
-        this.IsUpdateMalListRequested = true;
+        this.IsUpdateSeasonRequested = true;
 
         this.Animes = (await this.AnimeSeason.UpdateSeasonAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
 
