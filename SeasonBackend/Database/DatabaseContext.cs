@@ -23,7 +23,7 @@ namespace SeasonBackend.Database
             IEnumerable<Anime> animes;
             if (Season.IsPlanToWatch(season))
             {
-                animes = this.GetAnimeCollection().Find(x => x.Mal.Status == ListStatus.Plan2Watch);
+                animes = this.GetAnimeCollection().Find(x => x.Mal.Status == ListStatus.Plan2Watch || x.Mal.Status == ListStatus.Watching);
             }
             else
             {
@@ -34,7 +34,7 @@ namespace SeasonBackend.Database
             switch (filterBy)
             {
                 case FilterCriteria.FilterByPlan2Watch:
-                    animes = animes.Where(x => x.Mal.Status != ListStatus.Unknown && x.Mal.Status == ListStatus.Plan2Watch);
+                    animes = animes.Where(x => x.Mal.Status == ListStatus.Plan2Watch || x.Mal.Status == ListStatus.Watching);
                     break;
             }
 
