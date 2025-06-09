@@ -1,5 +1,5 @@
 # Build Preperation
-FROM mcr.microsoft.com/dotnet/sdk:8.0  as build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY SeasonBackend/SeasonBackend.csproj SeasonBackend/SeasonBackend.csproj
 COPY SeasonClientLib/SeasonClientLib.csproj SeasonClientLib/SeasonClientLib.csproj

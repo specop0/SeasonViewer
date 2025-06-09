@@ -1,5 +1,5 @@
 # Build Preperation
-FROM mcr.microsoft.com/dotnet/sdk:8.0  as build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY SeasonClientLib/SeasonClientLib.csproj SeasonClientLib/SeasonClientLib.csproj
 COPY SeasonViewer/SeasonViewer.csproj SeasonViewer/SeasonViewer.csproj
@@ -9,7 +9,7 @@ COPY SeasonClientLib SeasonClientLib
 COPY SeasonViewer SeasonViewer
 
 # Publish
-FROM build as publish
+FROM build AS publish
 WORKDIR /src
 RUN dotnet publish SeasonViewer/SeasonViewer.csproj --configuration Release --output publish
 

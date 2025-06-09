@@ -12,6 +12,8 @@ services:
     environment:
       - ASPNETCORE_URLS=
       - KESTREL__ENDPOINTS__HTTP2__URL=http://seasonbackend:5021
+      # garbage collector: workstation
+      - DOTNET_gcServer=0
 
   seasonviewer:
     build:
@@ -24,6 +26,8 @@ services:
       - ASPNETCORE_URLS=
       - KESTREL__ENDPOINTS__HTTP1__URL=http://seasonviewer:5020
       - BackendUrl=http://seasonbackend:5021
+      # garbage collector: workstation
+      - DOTNET_gcServer=0
 
 networks:
   main:
