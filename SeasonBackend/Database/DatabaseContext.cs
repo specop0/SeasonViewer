@@ -90,7 +90,7 @@ namespace SeasonBackend.Database
 
         public Anime GetAnime(long id)
         {
-            return this.GetAnimeCollection().Find(x => x.Id == id).FirstOrDefault();
+            return this.GetAnimeCollection().Find(x => x.Id == id).First();
         }
 
         public void UpdateMal(Anime anime, MalInformation malInformation)
@@ -196,7 +196,7 @@ namespace SeasonBackend.Database
 
         public void Dispose()
         {
-            this.Data = null;
+            this.Data = null!;
         }
     }
 }

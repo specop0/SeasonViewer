@@ -5,8 +5,8 @@ namespace SeasonBackend.Database;
 public class ImageData
 {
     [BsonId]
-    public string Id { get; set; }
+    public required string Id { get; set; }
 
-    public string MimeType { get; set; }
-    public byte[] Data { get; set; }
+    public required string MimeType { get; set; }
+    public required byte[] Data { get; set; }
 }

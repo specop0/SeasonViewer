@@ -4,8 +4,8 @@ namespace SeasonBackend.Miner
 {
     public class MineHosterResult
     {
-        public string PageSource { get; set; }
+        public string PageSource { get; set; } = "";
 
-        public HosterInformation[] Hosters { get; set; } = System.Array.Empty<HosterInformation>();
+        public HosterInformation[] Hosters { get; set; } = [];
     }
 }

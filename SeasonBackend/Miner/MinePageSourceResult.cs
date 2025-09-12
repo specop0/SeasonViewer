@@ -5,6 +5,6 @@ namespace SeasonBackend.Miner
     public class MinePageSourceResult
     {
         [JsonPropertyName("pageSource")]
-        public string PageSource { get; set; }
+        public string? PageSource { get; set; }
     }
 }

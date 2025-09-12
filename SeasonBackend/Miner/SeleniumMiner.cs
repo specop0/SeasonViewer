@@ -15,7 +15,7 @@ namespace SeasonBackend.Miner
     {
         public SeleniumMiner(HttpClient httpClient, IConfiguration configuration)
         {
-            var url = configuration.GetValue<string>("ConnectionStrings:SeleniumMinerUrl");
+            var url = configuration.GetValue<string>("ConnectionStrings:SeleniumMinerUrl") ?? "";
             httpClient.BaseAddress = new Uri(url);
             httpClient.Timeout = TimeSpan.FromMinutes(15d);
             this.Miner = httpClient;
@@ -40,9 +40,9 @@ namespace SeasonBackend.Miner
             return foundAnimes.ToArray();
         }
 
-        private async Task<Anime> MineAnimeAsync(string id)
+        private async Task<Anime?> MineAnimeAsync(string id)
         {
-            Anime anime = null;
+            Anime? anime = null;
             var requestUrl = new Uri($"https://myanimelist.net/anime/{id}");
 
             var pageSourceRequest = new MinePageSourceRequest
@@ -60,12 +60,16 @@ namespace SeasonBackend.Miner
             return anime;
         }
 
-        public static Anime ParseAnime(string body)
+        public static Anime? ParseAnime(string body)
         {
-            Anime anime = null;
+            Anime? anime = null;
 
             var pageSourceResult = body.Deserialize<MinePageSourceResult>();
-            var pageSource = pageSourceResult.PageSource;
+            var pageSource = pageSourceResult?.PageSource;
+            if (pageSource is null)
+            {
+                return null;
+            }
 
             var document = new HtmlDocument();
             document.LoadHtml(pageSource);
@@ -165,7 +169,11 @@ namespace SeasonBackend.Miner
         public static Anime[] ParseSeasonAnime(string body, string season)
         {
             var pageSourceResult = body.Deserialize<MinePageSourceResult>();
-            var pageSource = pageSourceResult.PageSource;
+            var pageSource = pageSourceResult?.PageSource;
+            if (pageSource is null)
+            {
+                return [];
+            }
 
             var animes = new List<Anime>();
 
@@ -278,7 +286,11 @@ namespace SeasonBackend.Miner
         public static MalListMineResult[] ParseMalList(string body)
         {
             var pageSourceResult = body.Deserialize<MinePageSourceResult>();
-            var pageSource = pageSourceResult.PageSource;
+            var pageSource = pageSourceResult?.PageSource;
+            if (pageSource is null)
+            {
+                return [];
+            }
 
             var animes = new List<MalListMineResult>();
 
@@ -331,7 +343,7 @@ namespace SeasonBackend.Miner
             return animes.ToArray();
         }
 
-        public async Task<MalInformation> MineMalAsync(Anime anime)
+        public async Task<MalInformation?> MineMalAsync(Anime anime)
         {
             var newAnime = await this.MineAnimeAsync(anime.Mal.Id);
             if (newAnime?.Mal != null)
@@ -432,7 +444,11 @@ namespace SeasonBackend.Miner
             var result = new List<DuckDuckGoSearchItem>();
 
             var pageSourceResult = body.Deserialize<DuckDuckGoSearchResult>();
-            var pageSource = pageSourceResult.PageSource;
+            var pageSource = pageSourceResult?.PageSource;
+            if (pageSource is null)
+            {
+                return [];
+            }
 
             var document = new HtmlDocument();
             document.LoadHtml(pageSource);
@@ -483,7 +499,7 @@ namespace SeasonBackend.Miner
             {
                 var body = await response.Content.ReadAsStringAsync();
                 var mineResult = body.Deserialize<ScreenshotResult>();
-                if (!string.IsNullOrEmpty(mineResult.ImageData))
+                if (!string.IsNullOrEmpty(mineResult?.ImageData))
                 {
                     result = Convert.FromBase64String(mineResult.ImageData);
                 }

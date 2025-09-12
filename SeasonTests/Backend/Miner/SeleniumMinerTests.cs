@@ -16,7 +16,8 @@
         protected string GetResource(params string[] path)
         {
             var name = this.GetType().Namespace + "." + string.Join(".", path);
-            var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
+            var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(name)
+                ?? throw new Exception($"Could find the following resource: {path}.");
             var reader = new StreamReader(stream);
             var content = reader.ReadToEnd();
             return content;
@@ -122,7 +123,7 @@
         public void TestParseAnime()
         {
             var season = "2020/summer";
-            var configurationDictionary = new Dictionary<string, string>
+            var configurationDictionary = new Dictionary<string, string?>
             {
                 { "ConnectionStrings:SeleniumMinerUrl", "http://localhost:22471/mine/" },
             };

@@ -6,7 +6,7 @@ namespace SeasonTests
     [TestFixture]
     public abstract class TestBase
     {
-        public string GetUniqueName(string prefix = null)
+        public string GetUniqueName(string? prefix = null)
         {
             if (string.IsNullOrWhiteSpace(prefix))
             {

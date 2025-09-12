@@ -6,7 +6,7 @@ public class HosterService
 {
     public HosterService(IConfiguration configuration)
     {
-        this.mappings = configuration.GetSection("HosterMapping").Get<HosterMappingOption[]>();
+        this.mappings = configuration.GetSection("HosterMapping").Get<HosterMappingOption[]>() ?? [];
     }
 
     private readonly HosterMappingOption[] mappings;

@@ -5,5 +5,5 @@ namespace SeasonBackend.Miner;
 public class ScreenshotResult
 {
     [JsonPropertyName("imageData")]
-    public string ImageData { get; set; }
+    public string? ImageData { get; set; }
 }

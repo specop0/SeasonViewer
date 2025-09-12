@@ -5,6 +5,6 @@ namespace SeasonBackend.Miner
     public class DuckDuckGoSearchRequest
     {
         [JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
     }
 }

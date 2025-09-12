@@ -2,6 +2,6 @@ namespace SeasonBackend.Services;
 
 public class HosterMappingOption
 {
-    public string Key { get; set; }
-    public string Pattern { get; set; }
+    public required string Key { get; set; }
+    public required string Pattern { get; set; }
 }

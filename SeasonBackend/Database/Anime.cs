@@ -11,7 +11,7 @@ namespace SeasonBackend.Database
 
         public List<string> Seasons { get; set; } = new List<string>();
 
-        public MalInformation Mal { get; set; }
+        public required MalInformation Mal { get; set; }
 
         public List<HosterInformation> Hoster { get; set; } = new List<HosterInformation>();
 

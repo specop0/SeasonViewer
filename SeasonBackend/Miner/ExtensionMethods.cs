@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
@@ -6,7 +7,7 @@ namespace SeasonBackend.Miner
 {
     public static class ExtensionMethods
     {
-        public static T Deserialize<T>(this string input)
+        public static T? Deserialize<T>(this string input)
         {
             var options = new JsonSerializerOptions()
             {

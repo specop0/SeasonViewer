@@ -334,6 +334,7 @@ namespace SeasonBackend.Services
                     imageData = new ImageData
                     {
                         Id = id,
+                        Data = [],
                         MimeType = string.Empty,
                     };
                 }

@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
     <!-- SQL Client requires a specific culture / International Components for Unicode (ICU) -->
     <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
