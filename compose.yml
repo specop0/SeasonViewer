@@ -26,6 +26,7 @@ services:
       - ASPNETCORE_URLS=
       - KESTREL__ENDPOINTS__HTTP1__URL=http://seasonviewer:5020
       - BackendUrl=http://seasonbackend:5021
+      - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
       # garbage collector: workstation
       - DOTNET_gcServer=0
 

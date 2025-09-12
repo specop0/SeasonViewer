@@ -9,6 +9,7 @@ namespace SeasonViewer.Data
     {
         public Anime(SeasonAnime model)
         {
+            this.model = null!;
             this.Model = model;
         }
 
@@ -18,7 +19,7 @@ namespace SeasonViewer.Data
 
         public string Name => this.Model.MalName;
 
-        public string ImageUrl => string.IsNullOrEmpty(this.Model.ImageId) ? null : $"api/image/{this.Model.ImageId}";
+        public string ImageUrl => string.IsNullOrEmpty(this.Model.ImageId) ? "" : $"api/image/{this.Model.ImageId}";
 
         public string MalUrl => $"https://myanimelist.net/anime/{this.MalId}";
 
@@ -34,7 +35,7 @@ namespace SeasonViewer.Data
 
         public bool AnimeMiningTriggered { get; set; }
 
-        public string[] Names { get; set; }
+        public string[] Names { get; set; } = [];
 
         private SeasonAnime model;
         public SeasonAnime Model

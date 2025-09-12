@@ -58,14 +58,14 @@ else
 
 @code{
 
-    public Anime[] Animes { get; set; }
+    public Anime[] Animes { get; set; } = [];
 
     public OrderCriteria OrderBy { get; set; }
     public GroupCriteria GroupBy { get; set; }
     public FilterCriteria FilterBy { get; set; }
 
     [Parameter]
-    public string RequestName { get; set; }
+    public string RequestName { get; set; } = "";
 
     protected override async Task OnParametersSetAsync()
     {

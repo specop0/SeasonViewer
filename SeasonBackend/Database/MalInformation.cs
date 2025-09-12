@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SeasonBackend.Database
+﻿namespace SeasonBackend.Database
 {
     public class MalInformation
     {

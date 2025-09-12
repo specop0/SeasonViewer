@@ -1,0 +1,51 @@
+﻿@implements IDisposable
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Authentication.JwtBearer
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@using SeasonViewer.Authentication
+@inject NavigationManager Navigation
+@inject OidcAuthenticationService AuthenticationService
+
+<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
+        <AuthorizeView>
+            <Authorized>
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            </Authorized>
+            <NotAuthorized>
+                <form action="login" method="get">
+                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                    <button type="submit" class="btn btn-primary">
+                        Log-In
+                    </button>
+                </form>
+            </NotAuthorized>
+        </AuthorizeView>
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p>Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = Navigation.Uri;
+        Navigation.LocationChanged += OnLocationChanged;
+        this.AuthenticationService.StartLogInNotAuthenticated();
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = Navigation.Uri;
+        this.StateHasChanged();
+    }
+
+    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+}

@@ -1,8 +1,5 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Grpc.Net.Client;
-using Microsoft.Extensions.Configuration;
 using SeasonBackend.Protos;
 using static SeasonBackend.Protos.SeasonProvider;
 
@@ -10,15 +7,9 @@ namespace SeasonViewer.Data
 {
     public class AnimeSeasonService
     {
-        public AnimeSeasonService(IConfiguration configuration)
+        public AnimeSeasonService(SeasonProviderClient client)
         {
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
-            var options = new GrpcChannelOptions();
-            var backendUrl = configuration.GetValue<string>("BackendUrl");
-            var channel = GrpcChannel.ForAddress(backendUrl, options);
-
-            this.Client = new SeasonProviderClient(channel);
+            this.Client = client;
         }
 
         private SeasonProviderClient Client { get; }
@@ -93,7 +84,7 @@ namespace SeasonViewer.Data
         {
             if (string.IsNullOrEmpty(id))
             {
-                return default;
+                return new ImageDataResponse();
             }
 
             var request = new ImageDataRequest

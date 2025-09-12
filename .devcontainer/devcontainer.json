@@ -9,7 +9,10 @@
                 "ms-dotnettools.csharp",
                 "ms-dotnettools.vscode-dotnet-runtime",
                 "ms-dotnettools.vscodeintellicode-csharp"
-            ]
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
         }
     }
 }
