@@ -12,7 +12,7 @@
     <Found Context="routeData">
         <AuthorizeView>
             <Authorized>
-                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             </Authorized>
             <NotAuthorized>
                 <form action="login" method="get">
@@ -38,7 +38,6 @@
     {
         currentUrl = Navigation.Uri;
         Navigation.LocationChanged += OnLocationChanged;
-        this.AuthenticationService.StartLogInNotAuthenticated();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

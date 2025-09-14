@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -30,13 +29,11 @@ namespace SeasonViewer
             services.AddCascadingAuthenticationState();
             services.AddOidcAuthentication(configuration);
 
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-            services.AddGrpcClient<SeasonBackend.Protos.SeasonProvider.SeasonProviderClient>("test", options =>
-                {
-                    var url = configuration.GetValue<string>("BackendUrl") ?? "";
-                    options.Address = new Uri(url);
-                });
-            services.AddScoped<Data.AnimeSeasonService>();
+            services.AddSingleton<SeasonViewer.Core.IDatabaseService, SeasonViewer.Infrastructure.Database.DatabaseService>();
+            services.AddSingleton<SeasonViewer.Core.Hosters.IHosterService, SeasonViewer.Infrastructure.Hosters.HosterService>();
+            services.AddHttpClient<SeasonViewer.Core.Miner.ISeleniumMiner, SeasonViewer.Infrastructure.Miner.SeleniumMiner>();
+            services.AddScoped<SeasonViewer.Core.Services.SeasonService>();
+            services.AddScoped<SeasonViewer.UserInterface.AnimeSeasonService>();
         }
 
         public static void Configure(WebApplication app, IConfiguration configuration)

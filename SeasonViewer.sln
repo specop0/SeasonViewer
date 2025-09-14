@@ -1,15 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.5.002.0
+VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeasonBackend", "SeasonBackend\SeasonBackend.csproj", "{11D39C78-F783-4D2B-AEAD-4EE3DD52B72E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeasonViewer", "SeasonViewer\SeasonViewer.csproj", "{AFC057E9-8F6B-4445-955F-27B52115F807}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeasonClientLib", "SeasonClientLib\SeasonClientLib.csproj", "{1D30EE33-0DFD-42E0-B745-055493544C30}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeasonTests", "SeasonTests\SeasonTests.csproj", "{6F780989-63D6-4896-8DBC-6F840165F5AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeasonViewer.Tests", "SeasonViewer.Tests\SeasonViewer.Tests.csproj", "{6F780989-63D6-4896-8DBC-6F840165F5AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,18 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{11D39C78-F783-4D2B-AEAD-4EE3DD52B72E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11D39C78-F783-4D2B-AEAD-4EE3DD52B72E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11D39C78-F783-4D2B-AEAD-4EE3DD52B72E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{11D39C78-F783-4D2B-AEAD-4EE3DD52B72E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AFC057E9-8F6B-4445-955F-27B52115F807}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AFC057E9-8F6B-4445-955F-27B52115F807}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFC057E9-8F6B-4445-955F-27B52115F807}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFC057E9-8F6B-4445-955F-27B52115F807}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D30EE33-0DFD-42E0-B745-055493544C30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D30EE33-0DFD-42E0-B745-055493544C30}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D30EE33-0DFD-42E0-B745-055493544C30}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D30EE33-0DFD-42E0-B745-055493544C30}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6F780989-63D6-4896-8DBC-6F840165F5AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6F780989-63D6-4896-8DBC-6F840165F5AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F780989-63D6-4896-8DBC-6F840165F5AA}.Release|Any CPU.ActiveCfg = Release|Any CPU

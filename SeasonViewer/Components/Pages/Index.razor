@@ -1,71 +1,74 @@
 ﻿@page "/{RequestName}"
 @page "/"
+@attribute [Authorize]
 
 @inject AnimeSeasonService AnimeSeason
 
-@if (this.Animes == null)
-{
-    <h1>Loading ... </h1>
-}
-else
-{
-    <div class="flex">
-        @if (this.IsUpdateSeasonRequested)
-        {
-            <button type="button" class="btn btn-secondary" disabled>Updating MAL Season...</button>
-        }
-        else
-        {
-            <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">Update MAL Season</button>
-        }
-        @if (this.IsUpdateMalListRequested)
-        {
-            <button type="button" class="btn btn-secondary" disabled>Updating MAL List...</button>
-        }
-        else
-        {
-            <button type="button" class="btn btn-secondary" @onclick="@UpdateMalListRequested">Update MAL List</button>
-        }
-        @if (this.IsMineMissingRequested)
-        {
-            <button type="button" class="btn btn-secondary" disabled>Mining Missing...</button>
-        }
-        else
-        {
-            <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">Mine Missing</button>
-        }
-        <select @bind="OrderBy">
-            <option value="@OrderCriteria.OrderByNone">None</option>
-            <option value="@OrderCriteria.OrderByName">Name</option>
-            <option value="@OrderCriteria.OrderByScore">Score</option>
-            <option value="@OrderCriteria.OrderByMember"># Member</option>
-        </select>
-        <select @bind="GroupBy">
-            <option value="@GroupCriteria.GroupByNone">None</option>
-            <option value="@GroupCriteria.GroupByHoster">Hoster</option>
-        </select>
-        <select @bind="FilterBy">
-            <option value="@FilterCriteria.FilterByNone">None</option>
-            <option value="@FilterCriteria.FilterByPlan2Watch">Plan 2 Watch</option>
-        </select>
-        <button type="button" class="btn btn-secondary" @onclick="@GetData">Apply</button>
-    </div>
-    foreach (var anime in this.Animes)
+<AuthorizeView>
+    @if (this.Animes == null)
     {
-        <AnimeForm Anime="@anime" />
+        <h1>Loading ... </h1>
     }
-}
+    else
+    {
+        <div class="flex">
+            @if (this.IsUpdateSeasonRequested)
+            {
+                <button type="button" class="btn btn-secondary" disabled>Updating MAL Season...</button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-secondary" @onclick="@UpdateSeasonRequested">Update MAL Season</button>
+            }
+            @if (this.IsUpdateMalListRequested)
+            {
+                <button type="button" class="btn btn-secondary" disabled>Updating MAL List...</button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-secondary" @onclick="@UpdateMalListRequested">Update MAL List</button>
+            }
+            @if (this.IsMineMissingRequested)
+            {
+                <button type="button" class="btn btn-secondary" disabled>Mining Missing...</button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-secondary" @onclick="@MineMissingRequested">Mine Missing</button>
+            }
+            <select @bind="OrderBy">
+                <option value="@OrderCriteria.OrderByNone">None</option>
+                <option value="@OrderCriteria.OrderByName">Name</option>
+                <option value="@OrderCriteria.OrderByScore">Score</option>
+                <option value="@OrderCriteria.OrderByMember"># Member</option>
+            </select>
+            <select @bind="GroupBy">
+                <option value="@GroupCriteria.GroupByNone">None</option>
+                <option value="@GroupCriteria.GroupByHoster">Hoster</option>
+            </select>
+            <select @bind="FilterBy">
+                <option value="@FilterCriteria.FilterByNone">None</option>
+                <option value="@FilterCriteria.FilterByPlan2Watch">Plan 2 Watch</option>
+            </select>
+            <button type="button" class="btn btn-secondary" @onclick="@GetData">Apply</button>
+        </div>
+        foreach (var anime in this.Animes)
+        {
+            <AnimeForm Anime="@anime" />
+        }
+    }
+</AuthorizeView>
 
-@code{
+@code {
 
-    public Anime[] Animes { get; set; } = [];
+    public AnimeViewModel[] Animes { get; set; } = [];
 
     public OrderCriteria OrderBy { get; set; }
     public GroupCriteria GroupBy { get; set; }
     public FilterCriteria FilterBy { get; set; }
 
     [Parameter]
-    public string RequestName { get; set; } = "";
+    public string? RequestName { get; set; } = "";
 
     protected override async Task OnParametersSetAsync()
     {
@@ -92,12 +95,20 @@ else
         {
             this.RequestName = this.RequestName.Replace("-", "/");
         }
-        this.Animes = (await this.AnimeSeason.GetSeasonAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
+        await this.GetData();
     }
 
     protected async Task GetData()
     {
-        this.Animes = (await this.AnimeSeason.GetSeasonAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
+        var requestName = this.RequestName?.ToLower();
+        if (requestName == "login" || requestName == "logout")
+        {
+            this.Animes = [];
+            return;
+        }
+
+        var response = await this.AnimeSeason.GetSeasonAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy);
+        this.Animes = [.. response.Select(x => new AnimeViewModel(x))];
     }
 
     public bool IsUpdateSeasonRequested { get; set; }
@@ -111,7 +122,8 @@ else
 
         this.IsUpdateSeasonRequested = true;
 
-        this.Animes = (await this.AnimeSeason.UpdateSeasonAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
+        var response = await this.AnimeSeason.UpdateSeasonAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy);
+        this.Animes = [.. response.Select(x => new AnimeViewModel(x))];
 
         this.IsUpdateSeasonRequested = false;
     }
@@ -127,7 +139,8 @@ else
 
         this.IsUpdateMalListRequested = true;
 
-        this.Animes = (await this.AnimeSeason.UpdateMalListAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy)) ?? new Anime[0];
+        var response = await this.AnimeSeason.UpdateMalListAsync(this.RequestName, this.OrderBy, this.GroupBy, this.FilterBy);
+        this.Animes = [.. response.Select(x => new AnimeViewModel(x))];
 
         this.IsUpdateMalListRequested = false;
     }

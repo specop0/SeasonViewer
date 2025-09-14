@@ -2,13 +2,14 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <!-- SQL Client requires a specific culture / International Components for Unicode (ICU) -->
+    <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SeasonClientLib\SeasonClientLib.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Duende.IdentityModel.OidcClient" Version="6.*" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.*"/>
+    <PackageReference Include="LiteDB" Version="5.0.17"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.*" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.*" />
+    <PackageReference Include="System.Text.Json" Version="8.*"/>
   </ItemGroup>
 </Project>

@@ -59,7 +59,7 @@
                 @if (this.Anime.HosterEditRequested)
                 {
                     <div class="flex">
-                        <button type="button" @onclick="@(() => this.Anime.HosterEdit.Add(new Hoster()))" class="btn btn-secondary">Add</button>
+                        <button type="button" @onclick="@(() => this.Anime.HosterEdit.Add(new HosterDto()))" class="btn btn-secondary">Add</button>
                         <button type="button" @onclick="@(() => this.ManualHosterEditCancelRequested(this.Anime))" class="btn btn-secondary">Cancel</button>
                         <button type="button" @onclick="@(() => this.ManualHosterEditOkRequested(this.Anime))" class="btn btn-primary">OK</button>
                     </div>
@@ -95,14 +95,14 @@
 
 @code {
     [Parameter]
-    public required Anime Anime { get; set; }
+    public required AnimeViewModel Anime { get; set; }
 
-    protected async Task HosterMiningRequested(Anime anime)
+    protected async Task HosterMiningRequested(AnimeViewModel anime)
     {
         await HosterMiningRequested(anime, this.AnimeSeason);
     }
 
-    public static async Task HosterMiningRequested(Anime anime, AnimeSeasonService animeSeason)
+    public static async Task HosterMiningRequested(AnimeViewModel anime, AnimeSeasonService animeSeason)
     {
         if (anime.HosterMiningTriggered)
         {
@@ -111,38 +111,38 @@
 
         anime.HosterMiningTriggered = true;
 
-        var response = await animeSeason.MineHosterAsync(anime);
-        if (response?.Anime != null)
+        var response = await animeSeason.MineHosterAsync(anime.Id);
+        if (response != null)
         {
-            anime.Model = response.Anime;
+            anime.Model = response;
         }
         anime.HosterMiningTriggered = false;
     }
 
-    protected void ManualHosterEditRequested(Anime anime)
+    protected void ManualHosterEditRequested(AnimeViewModel anime)
     {
         anime.HosterEditRequested = true;
         anime.HosterEdit.Clear();
-        anime.HosterEdit.AddRange(anime.Hoster.Select(x => new Hoster { Id = x.Id, HosterType = x.Model.HosterType, Name = x.Name, Url = x.Url }));
+        anime.HosterEdit.AddRange(anime.Hoster.Select(x => new HosterDto { Id = x.Id, HosterType = x.Model.HosterType, Name = x.Name, Url = x.Url }));
     }
 
-    protected async Task ManualHosterEditOkRequested(Anime anime)
+    protected async Task ManualHosterEditOkRequested(AnimeViewModel anime)
     {
-        var response = await this.AnimeSeason.EditHosterAsync(anime);
+        var response = await this.AnimeSeason.EditHosterAsync(anime.Id, anime.HosterEdit);
 
-        if (response?.Anime != null)
+        if (response != null)
         {
-            anime.Model = response.Anime;
+            anime.Model = response;
         }
         anime.HosterEditRequested = false;
     }
 
-    protected void ManualHosterEditCancelRequested(Anime anime)
+    protected void ManualHosterEditCancelRequested(AnimeViewModel anime)
     {
         anime.HosterEditRequested = false;
     }
 
-    protected async Task MalMiningRequested(Anime anime)
+    protected async Task MalMiningRequested(AnimeViewModel anime)
     {
         if (anime.AnimeMiningTriggered)
         {
@@ -151,10 +151,10 @@
 
         anime.AnimeMiningTriggered = true;
 
-        var response = await this.AnimeSeason.MineMalAsync(anime);
-        if (response?.Anime != null)
+        var response = await this.AnimeSeason.MineMalAsync(anime.Id);
+        if (response != null)
         {
-            anime.Model = response.Anime;
+            anime.Model = response;
         }
 
         anime.AnimeMiningTriggered = false;

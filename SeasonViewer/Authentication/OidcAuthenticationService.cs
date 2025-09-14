@@ -28,7 +28,7 @@ public class OidcAuthenticationService
         }
 
         var currentUrl = this.NavigationManager.Uri;
-        var url = "/login";
+        var url = "login";
         if (currentUrl is not null)
         {
             var queryParameter = "returnUrl=" + Uri.EscapeDataString(currentUrl);
