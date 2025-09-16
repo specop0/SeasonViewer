@@ -10,9 +10,9 @@ services:
     networks:
       - main
     environment:
-      - ASPNETCORE_URLS=
-      - KESTREL__ENDPOINTS__HTTP1__URL=http://seasonviewer:5020
+      - ASPNETCORE_URLS=http://seasonviewer:5020
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+      - Authentication__ClientId=OdOUrD5bmok9YxnsMdXbi4o0TsmLBd8RzrFRAcM6DkzGxSV3HfDKWbsJwCC1lETN
       # garbage collector: workstation
       - DOTNET_gcServer=0
 

@@ -4,6 +4,7 @@
     "https": {
       "commandName": "Project",
       "environmentVariables": {
+        "ASPNETCORE_URLS": "http://localhost:5020",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
